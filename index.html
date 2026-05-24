@@ -1,0 +1,2536 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Victor Kauan | Interactive OS Portfolio</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;700&family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+    <style>
+      /* =====================================================================
+         1. CORE VARIABLES & DESIGN SYSTEM
+         ===================================================================== */
+      :root {
+        --bg-base: #020617;
+        --bg-surface: rgba(15, 23, 42, 0.65);
+        --bg-surface-solid: #0f172a;
+        --bg-panel: rgba(30, 41, 59, 0.7);
+
+        --brand-primary: #38bdf8;
+        --brand-primary-glow: rgba(56, 189, 248, 0.5);
+        --brand-secondary: #818cf8;
+        --brand-accent: #c084fc;
+        --brand-health: #10b981;
+
+        --sys-green: #10b981;
+        --sys-yellow: #f59e0b;
+        --sys-red: #ef4444;
+
+        --text-100: #ffffff;
+        --text-200: #f1f5f9;
+        --text-300: #94a3b8;
+        --text-400: #64748b;
+
+        --border-light: rgba(255, 255, 255, 0.08);
+        --border-highlight: rgba(56, 189, 248, 0.3);
+
+        --font-code: "Fira Code", monospace;
+        --font-ui: "Inter", sans-serif;
+
+        --blur-md: blur(12px);
+        --blur-lg: blur(24px);
+
+        --transition-bounce: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        --transition-smooth: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+      }
+
+      /* =====================================================================
+         2. RESET & GLOBAL
+         ===================================================================== */
+      *,
+      *::before,
+      *::after {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body,
+      html {
+        width: 100%;
+        min-height: 100vh;
+        background-color: var(--bg-base);
+        color: var(--text-200);
+        font-family: var(--font-ui);
+        overflow-x: hidden;
+        scroll-behavior: smooth;
+        /* cursor: default — removed custom cursor ball as requested */
+      }
+
+      ::selection {
+        background-color: var(--brand-secondary);
+        color: #fff;
+      }
+      ::-webkit-scrollbar {
+        width: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: var(--bg-base);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: var(--brand-primary);
+      }
+
+      /* Background Effects */
+      #network-canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: -1;
+        opacity: 0.25;
+        pointer-events: none;
+      }
+      .grid-bg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: -2;
+        background-image:
+          linear-gradient(var(--border-light) 1px, transparent 1px),
+          linear-gradient(90deg, var(--border-light) 1px, transparent 1px);
+        background-size: 50px 50px;
+        opacity: 0.3;
+        transform: perspective(500px) rotateX(60deg) translateY(-100px)
+          translateZ(-200px);
+        animation: gridMove 20s linear infinite;
+      }
+      @keyframes gridMove {
+        0% {
+          background-position: 0 0;
+        }
+        100% {
+          background-position: 0 50px;
+        }
+      }
+
+      /* Reveal animations */
+      .reveal {
+        opacity: 0;
+        transform: translateY(40px);
+        transition: all 1s cubic-bezier(0.2, 0.8, 0.2, 1);
+      }
+      .reveal.active {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      /* =====================================================================
+         3. BOOT SEQUENCE
+         ===================================================================== */
+      #boot-screen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: #000;
+        z-index: 10000;
+        display: flex;
+        flex-direction: column;
+        padding: 30px;
+        font-family: var(--font-code);
+        font-size: 14px;
+        color: #a1a1aa;
+      }
+      .boot-line {
+        margin-bottom: 5px;
+        display: none;
+      }
+      .boot-ok {
+        color: var(--sys-green);
+      }
+      .boot-warn {
+        color: var(--sys-yellow);
+      }
+      .boot-glitch {
+        animation: glitch 0.2s linear infinite;
+        color: var(--brand-primary);
+        font-weight: bold;
+      }
+      @keyframes glitch {
+        0% {
+          transform: translate(0);
+        }
+        20% {
+          transform: translate(-2px, 1px);
+        }
+        40% {
+          transform: translate(-1px, -1px);
+        }
+        60% {
+          transform: translate(2px, 1px);
+        }
+        80% {
+          transform: translate(1px, -1px);
+        }
+        100% {
+          transform: translate(0);
+        }
+      }
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.4;
+        }
+      }
+      @keyframes spin {
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* =====================================================================
+         4. OS TOPBAR
+         ===================================================================== */
+      .os-topbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 40px;
+        background: rgba(2, 6, 23, 0.85);
+        backdrop-filter: var(--blur-md);
+        border-bottom: 1px solid var(--border-light);
+        z-index: 5000;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 20px;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-300);
+      }
+      .os-nav-links {
+        display: flex;
+        gap: 20px;
+        align-items: center;
+      }
+      .os-nav-item {
+        cursor: pointer;
+        transition: color 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        text-decoration: none;
+        color: var(--text-300);
+      }
+      .os-nav-item:hover {
+        color: var(--text-100);
+      }
+      .os-nav-item.brand {
+        color: var(--brand-primary);
+        font-family: var(--font-code);
+        font-weight: 700;
+        font-size: 15px;
+      }
+      .os-sys-info {
+        display: flex;
+        gap: 15px;
+        font-family: var(--font-code);
+      }
+
+      /* =====================================================================
+         5. MAIN DASHBOARD
+         ===================================================================== */
+      .dashboard-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 100px 5% 50px;
+      }
+
+      /* HERO */
+      .hero {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 85vh;
+        gap: 40px;
+        flex-wrap: wrap;
+      }
+      .hero-text {
+        flex: 1;
+        min-width: 300px;
+      }
+      .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-family: var(--font-code);
+        font-size: 12px;
+        padding: 8px 16px;
+        border-radius: 30px;
+        border: 1px solid var(--border-light);
+        background: var(--bg-surface);
+        margin-bottom: 25px;
+        color: var(--brand-primary);
+        box-shadow: 0 0 20px rgba(56, 189, 248, 0.1);
+      }
+      .hero-ping {
+        width: 8px;
+        height: 8px;
+        background: var(--sys-green);
+        border-radius: 50%;
+        box-shadow: 0 0 10px var(--sys-green);
+        animation: pulse 2s infinite;
+      }
+      .hero-title {
+        font-size: clamp(3.5rem, 6vw, 5.5rem);
+        font-weight: 900;
+        line-height: 1;
+        letter-spacing: -2px;
+        margin-bottom: 20px;
+        color: var(--text-100);
+      }
+      .hero-title span {
+        background: linear-gradient(
+          to right,
+          var(--brand-primary),
+          var(--brand-accent)
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      .hero-subtitle {
+        font-size: clamp(1.1rem, 2vw, 1.3rem);
+        color: var(--text-300);
+        line-height: 1.6;
+        margin-bottom: 40px;
+        max-width: 600px;
+      }
+      .hero-actions {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+      }
+      .btn {
+        padding: 16px 32px;
+        border-radius: 12px;
+        font-family: var(--font-code);
+        font-weight: 600;
+        font-size: 14px;
+        cursor: pointer;
+        transition: var(--transition-bounce);
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        text-decoration: none;
+      }
+      .btn-primary {
+        background: var(--brand-primary);
+        color: #000;
+        border: none;
+        box-shadow: 0 10px 25px var(--brand-primary-glow);
+      }
+      .btn-primary:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px var(--brand-primary-glow);
+      }
+      .btn-secondary {
+        background: var(--bg-surface);
+        color: var(--text-100);
+        border: 1px solid var(--border-light);
+        backdrop-filter: var(--blur-md);
+      }
+      .btn-secondary:hover {
+        border-color: var(--brand-secondary);
+        transform: translateY(-5px);
+      }
+
+      /* HERO VISUAL — avatar card style instead of floating sphere */
+      .hero-visual {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        min-width: 300px;
+      }
+      .avatar-card {
+        position: relative;
+        width: 340px;
+        background: var(--bg-surface);
+        border: 1px solid var(--border-highlight);
+        border-radius: 24px;
+        overflow: hidden;
+        backdrop-filter: var(--blur-lg);
+        box-shadow:
+          0 40px 80px rgba(0, 0, 0, 0.6),
+          0 0 60px rgba(56, 189, 248, 0.1);
+        transition: var(--transition-bounce);
+      }
+      .avatar-card:hover {
+        transform: translateY(-10px) scale(1.02);
+        border-color: var(--brand-primary);
+      }
+      .avatar-img-wrap {
+        width: 100%;
+        height: 300px;
+        overflow: hidden;
+        position: relative;
+      }
+      .avatar-img-wrap img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center top;
+        filter: brightness(0.9) contrast(1.05) saturate(1.1);
+        transition: filter 0.5s;
+      }
+      .avatar-card:hover .avatar-img-wrap img {
+        filter: brightness(1) contrast(1.08) saturate(1.2);
+      }
+      .avatar-img-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 80px;
+        background: linear-gradient(
+          to top,
+          var(--bg-surface-solid),
+          transparent
+        );
+      }
+      .avatar-card-info {
+        padding: 20px 24px 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .avatar-name {
+        font-size: 1.4rem;
+        font-weight: 800;
+        color: var(--text-100);
+      }
+      .avatar-role {
+        font-size: 0.85rem;
+        font-family: var(--font-code);
+        color: var(--brand-primary);
+      }
+      .avatar-badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .av-badge {
+        font-size: 11px;
+        font-family: var(--font-code);
+        padding: 4px 12px;
+        border-radius: 20px;
+        background: rgba(56, 189, 248, 0.1);
+        border: 1px solid rgba(56, 189, 248, 0.2);
+        color: var(--brand-primary);
+      }
+      .av-badge.green {
+        background: rgba(16, 185, 129, 0.1);
+        border-color: rgba(16, 185, 129, 0.2);
+        color: var(--sys-green);
+      }
+      .av-badge.purple {
+        background: rgba(192, 132, 252, 0.1);
+        border-color: rgba(192, 132, 252, 0.2);
+        color: var(--brand-accent);
+      }
+      /* Decorative ring behind card */
+      .avatar-ring-deco {
+        position: absolute;
+        width: 420px;
+        height: 420px;
+        border-radius: 50%;
+        z-index: -1;
+        background: conic-gradient(
+          from 0deg,
+          transparent 0%,
+          var(--brand-primary) 25%,
+          transparent 50%,
+          var(--brand-secondary) 75%,
+          transparent 100%
+        );
+        animation: spin 12s linear infinite;
+        opacity: 0.3;
+        filter: blur(20px);
+      }
+
+      /* =====================================================================
+         6. SECTION HEADERS
+         ===================================================================== */
+      .section-header {
+        margin: 100px 0 60px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .section-title {
+        font-size: clamp(2.5rem, 4vw, 3.5rem);
+        font-weight: 800;
+        color: var(--text-100);
+        letter-spacing: -1px;
+      }
+      .section-path {
+        font-family: var(--font-code);
+        color: var(--brand-primary);
+        font-size: 16px;
+      }
+
+      /* =====================================================================
+         7. BIO / ABOUT
+         ===================================================================== */
+      .bio-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 50px;
+        align-items: start;
+      }
+      .bio-text p {
+        font-size: 1.15rem;
+        line-height: 1.8;
+        color: var(--text-300);
+        margin-bottom: 25px;
+      }
+      .bio-text strong {
+        color: var(--text-100);
+      }
+      .bio-text .highlight {
+        color: var(--brand-accent);
+        font-family: var(--font-code);
+      }
+
+      /* Lab Badge */
+      .lab-badge {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        background: rgba(16, 185, 129, 0.08);
+        border: 1px solid rgba(16, 185, 129, 0.25);
+        border-radius: 16px;
+        padding: 16px 20px;
+        margin-bottom: 20px;
+      }
+      .lab-icon {
+        font-size: 28px;
+        color: var(--sys-green);
+      }
+      .lab-info {
+        flex: 1;
+      }
+      .lab-name {
+        font-size: 0.85rem;
+        font-family: var(--font-code);
+        color: var(--sys-green);
+        font-weight: 700;
+        letter-spacing: 1px;
+      }
+      .lab-desc {
+        font-size: 0.9rem;
+        color: var(--text-300);
+        margin-top: 4px;
+      }
+
+      /* Terminal Window */
+      .terminal-window {
+        background: rgba(10, 15, 25, 0.9);
+        border: 1px solid var(--border-light);
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+        font-family: var(--font-code);
+        transform: perspective(1000px) rotateY(-5deg);
+        transition: var(--transition-bounce);
+      }
+      .terminal-window:hover {
+        transform: perspective(1000px) rotateY(0deg) translateY(-10px);
+        border-color: var(--brand-primary);
+      }
+      .tw-header {
+        background: rgba(255, 255, 255, 0.03);
+        padding: 12px 20px;
+        display: flex;
+        gap: 8px;
+        border-bottom: 1px solid var(--border-light);
+        align-items: center;
+      }
+      .tw-title {
+        font-size: 12px;
+        color: var(--text-400);
+        margin-left: 8px;
+        flex: 1;
+        text-align: center;
+      }
+      .tw-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+      }
+      .tw-dot.r {
+        background: var(--sys-red);
+      }
+      .tw-dot.y {
+        background: var(--sys-yellow);
+      }
+      .tw-dot.g {
+        background: var(--sys-green);
+      }
+      .tw-body {
+        padding: 25px;
+        font-size: 13px;
+        line-height: 1.8;
+        color: var(--text-200);
+      }
+      .tw-line {
+        margin-bottom: 10px;
+      }
+      .tw-prompt {
+        color: var(--brand-primary);
+      }
+      .tw-out {
+        color: var(--text-400);
+        padding-left: 15px;
+        border-left: 2px solid rgba(255, 255, 255, 0.1);
+        margin-top: 5px;
+      }
+      .tw-key {
+        color: var(--brand-secondary);
+      }
+      .tw-val {
+        color: var(--sys-green);
+      }
+      .tw-str {
+        color: var(--sys-yellow);
+      }
+
+      /* =====================================================================
+         8. INTERACTIVE TERMINAL
+         ===================================================================== */
+      .interactive-section {
+        margin-top: 100px;
+      }
+      .iterm-wrapper {
+        background: rgba(5, 10, 20, 0.95);
+        border: 1px solid var(--border-highlight);
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow:
+          0 40px 80px rgba(0, 0, 0, 0.7),
+          0 0 40px rgba(56, 189, 248, 0.05);
+      }
+      .iterm-topbar {
+        background: rgba(15, 23, 42, 0.9);
+        padding: 14px 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border-bottom: 1px solid var(--border-light);
+      }
+      .iterm-dots {
+        display: flex;
+        gap: 7px;
+      }
+      .iterm-dot {
+        width: 13px;
+        height: 13px;
+        border-radius: 50%;
+      }
+      .iterm-dot.r {
+        background: #ff5f56;
+      }
+      .iterm-dot.y {
+        background: #ffbd2e;
+      }
+      .iterm-dot.g {
+        background: #27c93f;
+      }
+      .iterm-title {
+        flex: 1;
+        text-align: center;
+        font-family: var(--font-code);
+        font-size: 12px;
+        color: var(--text-400);
+      }
+      .iterm-body {
+        padding: 24px;
+        min-height: 300px;
+        max-height: 420px;
+        overflow-y: auto;
+        font-family: var(--font-code);
+        font-size: 13.5px;
+        line-height: 1.7;
+        display: flex;
+        flex-direction: column;
+      }
+      .iterm-output {
+        flex: 1;
+      }
+      .iterm-line {
+        margin-bottom: 4px;
+      }
+      .iterm-line.cmd {
+        color: var(--brand-primary);
+      }
+      .iterm-line.out {
+        color: var(--text-300);
+      }
+      .iterm-line.out-green {
+        color: var(--sys-green);
+      }
+      .iterm-line.out-yellow {
+        color: var(--sys-yellow);
+      }
+      .iterm-line.out-blue {
+        color: var(--brand-secondary);
+      }
+      .iterm-line.out-accent {
+        color: var(--brand-accent);
+      }
+      .iterm-line.err {
+        color: var(--sys-red);
+      }
+      .iterm-line.separator {
+        color: var(--text-400);
+        margin: 8px 0;
+      }
+      .iterm-input-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        border-top: 1px solid rgba(255, 255, 255, 0.04);
+        padding-top: 14px;
+        margin-top: 10px;
+      }
+      .iterm-ps1 {
+        color: var(--brand-primary);
+        white-space: nowrap;
+        font-weight: 600;
+      }
+      .iterm-input {
+        flex: 1;
+        background: transparent;
+        border: none;
+        outline: none;
+        font-family: var(--font-code);
+        font-size: 13.5px;
+        color: var(--text-100);
+        caret-color: var(--brand-primary);
+      }
+      .iterm-hint {
+        padding: 10px 24px 16px;
+        font-family: var(--font-code);
+        font-size: 11px;
+        color: var(--text-400);
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+        border-top: 1px solid var(--border-light);
+      }
+      .iterm-hint span {
+        cursor: pointer;
+        transition: color 0.2s;
+      }
+      .iterm-hint span:hover {
+        color: var(--brand-primary);
+      }
+
+      /* =====================================================================
+         9. PROJECTS — PREMIUM CARDS
+         ===================================================================== */
+      .premium-projects {
+        display: flex;
+        flex-direction: column;
+        gap: 100px;
+        margin-top: 50px;
+      }
+      .premium-card {
+        display: grid;
+        grid-template-columns: 1.2fr 1fr;
+        gap: 50px;
+        align-items: center;
+        background: var(--bg-surface);
+        border: 1px solid var(--border-light);
+        border-radius: 24px;
+        padding: 50px;
+        backdrop-filter: var(--blur-md);
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+        position: relative;
+        overflow: hidden;
+      }
+      .premium-card.reverse {
+        grid-template-columns: 1fr 1.2fr;
+      }
+      .premium-card.reverse .pc-content {
+        order: 2;
+      }
+      .premium-card.reverse .pc-visuals {
+        order: 1;
+      }
+
+      .premium-card.health::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 50%;
+        height: 100%;
+        background: radial-gradient(
+          circle at center,
+          rgba(16, 185, 129, 0.08),
+          transparent 70%
+        );
+        pointer-events: none;
+      }
+      .premium-card.verilog::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 50%;
+        height: 100%;
+        background: radial-gradient(
+          circle at center,
+          rgba(168, 85, 247, 0.1),
+          transparent 70%
+        );
+        pointer-events: none;
+      }
+      .premium-card.quizzv::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 50%;
+        height: 100%;
+        background: radial-gradient(
+          circle at center,
+          rgba(56, 189, 248, 0.1),
+          transparent 70%
+        );
+        pointer-events: none;
+      }
+      .premium-card.omr::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 50%;
+        height: 100%;
+        background: radial-gradient(
+          circle at center,
+          rgba(245, 158, 11, 0.08),
+          transparent 70%
+        );
+        pointer-events: none;
+      }
+
+      .pc-content {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+      .pc-badge {
+        font-family: var(--font-code);
+        font-size: 12px;
+        padding: 6px 14px;
+        border-radius: 20px;
+        width: fit-content;
+      }
+      .pc-badge.green {
+        color: var(--sys-green);
+        background: rgba(16, 185, 129, 0.1);
+        border: 1px solid rgba(16, 185, 129, 0.3);
+      }
+      .pc-badge.purple {
+        color: var(--brand-accent);
+        background: rgba(192, 132, 252, 0.1);
+        border: 1px solid rgba(192, 132, 252, 0.3);
+      }
+      .pc-badge.blue {
+        color: var(--brand-primary);
+        background: rgba(56, 189, 248, 0.1);
+        border: 1px solid rgba(56, 189, 248, 0.3);
+      }
+      .pc-badge.yellow {
+        color: var(--sys-yellow);
+        background: rgba(245, 158, 11, 0.1);
+        border: 1px solid rgba(245, 158, 11, 0.3);
+      }
+      .pc-title {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: var(--text-100);
+      }
+      .pc-desc {
+        font-size: 1.05rem;
+        color: var(--text-300);
+        line-height: 1.7;
+      }
+      .pc-story {
+        background: rgba(0, 0, 0, 0.3);
+        border-left: 3px solid var(--brand-accent);
+        padding: 18px 20px;
+        border-radius: 0 12px 12px 0;
+        font-style: italic;
+        color: var(--text-200);
+        font-size: 0.95rem;
+      }
+      .pc-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 10px;
+      }
+      .tag-pill {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--border-light);
+        padding: 7px 15px;
+        border-radius: 30px;
+        font-family: var(--font-code);
+        font-size: 12px;
+        color: var(--text-200);
+      }
+      .pc-links {
+        display: flex;
+        gap: 12px;
+        margin-top: 10px;
+      }
+      .pc-link {
+        font-family: var(--font-code);
+        font-size: 12px;
+        color: var(--brand-primary);
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 16px;
+        border: 1px solid rgba(56, 189, 248, 0.3);
+        border-radius: 8px;
+        transition: var(--transition-smooth);
+        background: rgba(56, 189, 248, 0.05);
+      }
+      .pc-link:hover {
+        background: rgba(56, 189, 248, 0.15);
+        transform: translateY(-2px);
+      }
+
+      .pc-visuals {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        min-height: 380px;
+        perspective: 1000px;
+      }
+
+      /* Mockup windows */
+      .mockup-window {
+        position: absolute;
+        background: #000;
+        border: 1px solid var(--border-light);
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+        transition: var(--transition-bounce);
+      }
+      .mockup-header {
+        background: #1e1e1e;
+        padding: 10px;
+        display: flex;
+        gap: 6px;
+      }
+      .m-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #555;
+      }
+      .mockup-content {
+        width: 100%;
+        height: calc(100% - 30px);
+      }
+      .mockup-content img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        opacity: 0.8;
+        transition: 0.3s;
+      }
+
+      /* Health project visuals — terminal stack */
+      .health .mw-1 {
+        width: 85%;
+        height: 260px;
+        top: 0;
+        right: 0;
+        z-index: 1;
+        transform: translateZ(-40px) rotateY(-8deg);
+        opacity: 0.6;
+      }
+      .health .mw-2 {
+        width: 88%;
+        height: 280px;
+        bottom: 0;
+        left: 0;
+        z-index: 2;
+        transform: translateZ(40px) rotateY(5deg);
+        border-color: var(--sys-green);
+        box-shadow: 0 0 30px rgba(16, 185, 129, 0.15);
+      }
+      .health:hover .mw-2 {
+        transform: translateZ(70px) rotateY(0deg) scale(1.04);
+      }
+      .health:hover .mw-2 img {
+        opacity: 1;
+      }
+
+      .verilog .mw-1 {
+        width: 85%;
+        height: 280px;
+        top: 0;
+        right: 0;
+        z-index: 1;
+        transform: translateZ(-50px) rotateY(-10deg);
+        opacity: 0.6;
+      }
+      .verilog .mw-2 {
+        width: 90%;
+        height: 300px;
+        bottom: 0;
+        left: 0;
+        z-index: 2;
+        transform: translateZ(50px) rotateY(5deg);
+        border-color: var(--brand-accent);
+        box-shadow: 0 0 30px rgba(168, 85, 247, 0.2);
+      }
+      .verilog:hover .mw-2 {
+        transform: translateZ(80px) rotateY(0deg) scale(1.05);
+      }
+      .verilog:hover .mw-2 img {
+        opacity: 1;
+      }
+
+      .quizzv .mw-desktop {
+        width: 80%;
+        height: 260px;
+        top: 20px;
+        left: 0;
+        z-index: 1;
+        transform: translateZ(-20px);
+      }
+      .quizzv .mw-mobile {
+        width: 33%;
+        height: 360px;
+        bottom: -10px;
+        right: 10px;
+        z-index: 2;
+        border-radius: 22px;
+        border: 3px solid #333;
+        transform: translateZ(60px);
+      }
+      .quizzv .mw-mobile .mockup-header {
+        display: none;
+      }
+      .quizzv:hover .mw-mobile {
+        transform: translateZ(90px) translateY(-10px);
+        border-color: var(--brand-primary);
+      }
+
+      .omr .mw-1 {
+        width: 88%;
+        height: 270px;
+        top: 0;
+        right: 0;
+        z-index: 1;
+        transform: translateZ(-40px) rotateY(-8deg);
+        opacity: 0.65;
+      }
+      .omr .mw-2 {
+        width: 86%;
+        height: 270px;
+        bottom: 0;
+        left: 0;
+        z-index: 2;
+        transform: translateZ(40px) rotateY(5deg);
+        border-color: var(--sys-yellow);
+        box-shadow: 0 0 25px rgba(245, 158, 11, 0.12);
+      }
+      .omr:hover .mw-2 {
+        transform: translateZ(70px) rotateY(0deg) scale(1.04);
+      }
+      .omr:hover .mw-2 img {
+        opacity: 1;
+      }
+
+      .premium-card.studyai::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 50%;
+        height: 100%;
+        background: radial-gradient(
+          circle at center,
+          rgba(245, 158, 11, 0.07),
+          transparent 70%
+        );
+        pointer-events: none;
+      }
+      .studyai .mw-1 {
+        width: 87%;
+        height: 265px;
+        top: 0;
+        right: 0;
+        z-index: 1;
+        transform: translateZ(-45px) rotateY(-9deg);
+        opacity: 0.6;
+      }
+      .studyai .mw-2 {
+        width: 89%;
+        height: 275px;
+        bottom: 0;
+        left: 0;
+        z-index: 2;
+        transform: translateZ(45px) rotateY(5deg);
+        border-color: var(--brand-accent);
+        box-shadow: 0 0 30px rgba(192, 132, 252, 0.15);
+      }
+      .studyai:hover .mw-2 {
+        transform: translateZ(75px) rotateY(0deg) scale(1.05);
+      }
+      .studyai:hover .mw-2 img {
+        opacity: 1;
+      }
+
+      /* =====================================================================
+         10. CORE CARDS (Other projects)
+         ===================================================================== */
+      .core-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 28px;
+        perspective: 1000px;
+      }
+      .core-card {
+        background: var(--bg-surface);
+        border: 1px solid var(--border-light);
+        border-radius: 16px;
+        padding: 28px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        transition: var(--transition-bounce);
+        transform-style: preserve-3d;
+        cursor: default;
+      }
+      .core-card:hover {
+        border-color: var(--brand-primary);
+        transform: translateY(-10px) rotateX(2deg);
+      }
+      .cc-icon {
+        width: 48px;
+        height: 48px;
+        background: rgba(56, 189, 248, 0.1);
+        border-radius: 12px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: var(--brand-primary);
+        font-size: 22px;
+      }
+      .cc-icon.green {
+        background: rgba(16, 185, 129, 0.1);
+        color: var(--sys-green);
+      }
+      .cc-icon.purple {
+        background: rgba(192, 132, 252, 0.1);
+        color: var(--brand-accent);
+      }
+      .cc-icon.yellow {
+        background: rgba(245, 158, 11, 0.1);
+        color: var(--sys-yellow);
+      }
+      .cc-title {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--text-100);
+      }
+      .cc-desc {
+        font-size: 0.95rem;
+        color: var(--text-300);
+        line-height: 1.65;
+        flex-grow: 1;
+      }
+      .cc-link {
+        font-family: var(--font-code);
+        color: var(--brand-secondary);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 8px;
+        font-size: 13px;
+        transition: color 0.2s;
+      }
+      .cc-link:hover {
+        color: var(--brand-primary);
+      }
+
+      /* =====================================================================
+         11. CURRENT PROJECT — PET SAÚDE
+         ===================================================================== */
+      .current-project-banner {
+        background: linear-gradient(
+          135deg,
+          rgba(16, 185, 129, 0.08) 0%,
+          rgba(56, 189, 248, 0.05) 100%
+        );
+        border: 1px solid rgba(16, 185, 129, 0.2);
+        border-radius: 20px;
+        padding: 36px 40px;
+        display: flex;
+        gap: 32px;
+        align-items: flex-start;
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 60px;
+      }
+      .cpb-pulse {
+        position: absolute;
+        top: 20px;
+        right: 24px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-family: var(--font-code);
+        font-size: 11px;
+        color: var(--sys-green);
+      }
+      .cpb-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--sys-green);
+        animation: pulse 2s infinite;
+        box-shadow: 0 0 8px var(--sys-green);
+      }
+      .cpb-icon {
+        font-size: 40px;
+        color: var(--sys-green);
+        flex-shrink: 0;
+        margin-top: 4px;
+      }
+      .cpb-content {
+        flex: 1;
+      }
+      .cpb-subtitle {
+        font-family: var(--font-code);
+        font-size: 11px;
+        color: var(--sys-green);
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+      }
+      .cpb-title {
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: var(--text-100);
+        margin-bottom: 12px;
+      }
+      .cpb-desc {
+        font-size: 1rem;
+        color: var(--text-300);
+        line-height: 1.7;
+        margin-bottom: 16px;
+      }
+      .cpb-partners {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 12px;
+      }
+      .cpb-partner {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--border-light);
+        border-radius: 8px;
+        padding: 8px 14px;
+        font-size: 13px;
+        color: var(--text-200);
+      }
+      .cpb-partner i {
+        color: var(--sys-green);
+      }
+
+      /* =====================================================================
+         12. FOOTER
+         ===================================================================== */
+      .footer-section {
+        margin-top: 150px;
+        border-top: 1px solid var(--border-light);
+        padding: 80px 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        background: linear-gradient(to top, rgba(15, 23, 42, 0.8), transparent);
+      }
+      .footer-title {
+        font-size: 3rem;
+        font-weight: 900;
+        color: var(--text-100);
+        margin-bottom: 20px;
+      }
+      .social-dock {
+        display: flex;
+        gap: 20px;
+        margin-top: 40px;
+        background: rgba(0, 0, 0, 0.5);
+        padding: 15px 30px;
+        border-radius: 50px;
+        border: 1px solid var(--border-light);
+        backdrop-filter: var(--blur-md);
+      }
+      .s-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: var(--bg-surface);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: var(--text-200);
+        font-size: 20px;
+        text-decoration: none;
+        transition: var(--transition-bounce);
+        border: 1px solid transparent;
+      }
+      .s-icon:hover {
+        transform: translateY(-10px);
+        background: var(--brand-primary);
+        color: #000;
+        box-shadow: 0 10px 20px var(--brand-primary-glow);
+      }
+
+      /* =====================================================================
+         13. RESPONSIVE
+         ===================================================================== */
+      @media (max-width: 1024px) {
+        .premium-card {
+          grid-template-columns: 1fr;
+          padding: 30px;
+        }
+        .premium-card.reverse {
+          grid-template-columns: 1fr;
+        }
+        .premium-card.reverse .pc-content,
+        .premium-card.reverse .pc-visuals {
+          order: unset;
+        }
+        .pc-visuals {
+          min-height: 300px;
+        }
+        .bio-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      @media (max-width: 768px) {
+        .os-topbar {
+          display: none;
+        }
+        body {
+          padding-top: 20px;
+        }
+        .hero {
+          flex-direction: column;
+          text-align: center;
+          margin-top: 50px;
+        }
+        .hero-actions {
+          justify-content: center;
+        }
+        .core-grid {
+          grid-template-columns: 1fr;
+        }
+        .social-dock {
+          flex-wrap: wrap;
+          justify-content: center;
+          border-radius: 20px;
+        }
+        .pc-title {
+          font-size: 2rem;
+        }
+        .current-project-banner {
+          flex-direction: column;
+        }
+        .avatar-card {
+          width: 280px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="network-canvas"></canvas>
+    <div class="grid-bg"></div>
+
+    <!-- BOOT SEQUENCE -->
+    <div id="boot-screen">
+      <div class="boot-line">
+        Mounting Virtual Filesystem... <span class="boot-ok">[OK]</span>
+      </div>
+      <div class="boot-line">
+        Starting Kernel Services... <span class="boot-ok">[OK]</span>
+      </div>
+      <div class="boot-line">
+        Initializing UI Daemon... <span class="boot-ok">[OK]</span>
+      </div>
+      <div class="boot-line">
+        Loading Hardware Drivers (RISC-V, Verilog)...
+        <span class="boot-ok">[OK]</span>
+      </div>
+      <div class="boot-line">
+        Loading CESLA Vision Lab Modules (OpenCV, YOLO)...
+        <span class="boot-ok">[OK]</span>
+      </div>
+      <div class="boot-line">
+        Allocating VRAM for 3D Render Engine...
+        <span class="boot-warn">[WARN: High Usage]</span>
+      </div>
+      <div class="boot-line">
+        Mounting PET Saúde Digital Volume... <span class="boot-ok">[OK]</span>
+      </div>
+      <div class="boot-line">Fetching User Profile Data...</div>
+      <div class="boot-line boot-glitch">
+        DECRYPTING VICTOR_KAUAN_PROFILE.BIN...
+      </div>
+      <div class="boot-line">
+        System Ready. Establishing connection...
+        <span class="boot-ok">[OK]</span>
+      </div>
+    </div>
+
+    <!-- OS TOPBAR -->
+    <nav class="os-topbar">
+      <div class="os-nav-links">
+        <div class="os-nav-item brand">
+          <i class="fas fa-terminal"></i> VK_OS
+        </div>
+        <a href="#hero" class="os-nav-item">System</a>
+        <a href="#about" class="os-nav-item">Whoami</a>
+        <a href="#deployments" class="os-nav-item">Deployments</a>
+        <a href="#terminal" class="os-nav-item">Terminal</a>
+      </div>
+      <div class="os-sys-info">
+        <span>CESLA/UFPI</span>
+        <span>MEM: 1.2GB/16GB</span>
+        <span>CPU: 12%</span>
+        <span id="clock" style="color: var(--brand-primary)">00:00:00</span>
+      </div>
+    </nav>
+
+    <div class="dashboard-container">
+      <!-- ===== HERO ===== -->
+      <section id="hero" class="hero reveal">
+        <div class="hero-text">
+          <div class="hero-badge">
+            <div class="hero-ping"></div>
+            SYSTEM ONLINE · UFPI · CESLA
+          </div>
+          <h1 class="hero-title">Victor<br /><span>Kauan</span></h1>
+          <p class="hero-subtitle">
+            Desenvolvedor Full-Stack focado em resolver problemas complexos na
+            interseção entre
+            <strong>Inteligência Artificial Generativa</strong>,
+            <strong>Visão Computacional</strong>,
+            <strong>Cibersegurança</strong> e
+            <strong>Arquitetura de Baixo Nível</strong>.
+          </p>
+          <div class="hero-actions">
+            <a href="#deployments" class="btn btn-primary"
+              ><i class="fas fa-rocket"></i> Explorar Deployments</a
+            >
+            <a href="curriculo.pdf" class="btn btn-secondary"
+              ><i class="fas fa-download"></i> Baixar Currículo</a
+            >
+          </div>
+        </div>
+
+        <div class="hero-visual">
+          <div class="avatar-ring-deco"></div>
+          <div class="avatar-card">
+            <div class="avatar-img-wrap">
+              <img
+                src="https://github.com/victor-kauan-coder.png"
+                alt="Victor Kauan"
+              />
+              <div class="avatar-img-overlay"></div>
+            </div>
+            <div class="avatar-card-info">
+              <div class="avatar-name">Victor Kauan</div>
+              <div class="avatar-role">$ fullstack-dev --mode=research</div>
+              <div class="avatar-badges">
+                <span class="av-badge">UFPI / CESLA</span>
+                <span class="av-badge green">PET Saúde Digital</span>
+                <span class="av-badge purple">CV Research</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== ABOUT ===== -->
+      <section id="about" class="reveal">
+        <div class="section-header">
+          <span class="section-path">~/system/users/victor/history.txt</span>
+          <h2 class="section-title">A Jornada Técnica</h2>
+        </div>
+
+        <div class="bio-grid">
+          <div class="bio-text">
+            <!-- CESLA Lab Badge -->
+            <div class="lab-badge">
+              <div class="lab-icon"><i class="fas fa-microscope"></i></div>
+              <div class="lab-info">
+                <div class="lab-name">
+                  ⬡ CESLA · UFPI — Laboratório de Pesquisa
+                </div>
+                <div class="lab-desc">
+                  Membro ativo do Centro de Estudos de Sistemas e Laboratório
+                  Aplicado especializado em
+                  <strong>Visão Computacional</strong> — processamento de
+                  imagens, redes neurais convolucionais e sistemas de detecção
+                  inteligente.
+                </div>
+              </div>
+            </div>
+
+            <p>
+              Minha fundação na Ciência da Computação na
+              <strong>Universidade Federal do Piauí (UFPI)</strong> foi
+              construída não apenas em sala de aula, mas em laboratórios de
+              pesquisa e no campo real. No <span class="highlight">CESLA</span>,
+              mergulhei no universo da <strong>Visão Computacional</strong> —
+              desenvolvendo sistemas que enxergam, interpretam e reagem ao mundo
+              visual.
+            </p>
+            <p>
+              Acredito que o software mais impactante nasce da interseção entre
+              pesquisa acadêmica e necessidades reais. Essa filosofia me guia
+              tanto no laboratório quanto em projetos sociais como o
+              <span class="highlight">PET Saúde Digital</span>, onde tecnologia
+              encontra saúde pública.
+            </p>
+            <p>
+              Da síntese de hardware em Verilog a APIs Flask com foco em
+              segurança, busco atuar em toda a profundidade da stack — do
+              silício à interface.
+            </p>
+          </div>
+
+          <div class="terminal-window">
+            <div class="tw-header">
+              <div class="tw-dot r"></div>
+              <div class="tw-dot y"></div>
+              <div class="tw-dot g"></div>
+              <div class="tw-title">victor@ufpi:~$ cat profile.json</div>
+            </div>
+            <div class="tw-body">
+              <div class="tw-line">
+                <span class="tw-prompt">$</span> cat
+                ~/.config/victor/profile.json
+              </div>
+              <div class="tw-line">{</div>
+              <div class="tw-line">
+                &nbsp;&nbsp;<span class="tw-key">"name"</span>:
+                <span class="tw-str">"Victor Kauan"</span>,
+              </div>
+              <div class="tw-line">
+                &nbsp;&nbsp;<span class="tw-key">"university"</span>:
+                <span class="tw-str">"UFPI"</span>,
+              </div>
+              <div class="tw-line">
+                &nbsp;&nbsp;<span class="tw-key">"lab"</span>:
+                <span class="tw-str">"CESLA — Visão Computacional"</span>,
+              </div>
+              <div class="tw-line">
+                &nbsp;&nbsp;<span class="tw-key">"languages"</span>: [<span
+                  class="tw-str"
+                  >"Python"</span
+                >, <span class="tw-str">"JS"</span>,
+                <span class="tw-str">"Rust"</span>,
+                <span class="tw-str">"Verilog"</span>,
+                <span class="tw-str">"C++"</span>],
+              </div>
+              <div class="tw-line">
+                &nbsp;&nbsp;<span class="tw-key">"frameworks"</span>: [<span
+                  class="tw-str"
+                  >"Flask"</span
+                >, <span class="tw-str">"FastAPI"</span>,
+                <span class="tw-str">"React"</span>,
+                <span class="tw-str">"Django"</span>],
+              </div>
+              <div class="tw-line">
+                &nbsp;&nbsp;<span class="tw-key">"cv_stack"</span>: [<span
+                  class="tw-str"
+                  >"OpenCV"</span
+                >, <span class="tw-str">"YOLO"</span>,
+                <span class="tw-str">"PyTorch"</span>],
+              </div>
+              <div class="tw-line">
+                &nbsp;&nbsp;<span class="tw-key">"security"</span>: [<span
+                  class="tw-str"
+                  >"JWT"</span
+                >, <span class="tw-str">"HTTPS"</span>,
+                <span class="tw-str">"RBAC"</span>,
+                <span class="tw-str">"bcrypt"</span>],
+              </div>
+              <div class="tw-line">
+                &nbsp;&nbsp;<span class="tw-key">"infra"</span>: [<span
+                  class="tw-str"
+                  >"Docker"</span
+                >, <span class="tw-str">"Linux"</span>,
+                <span class="tw-str">"Firebase"</span>],
+              </div>
+              <div class="tw-line">
+                &nbsp;&nbsp;<span class="tw-key">"status"</span>:
+                <span class="tw-val">"active_research"</span>
+              </div>
+              <div class="tw-line">}</div>
+              <div class="tw-line" style="margin-top: 10px">
+                <span class="tw-prompt">victor@ufpi:~$</span>
+                <span
+                  style="animation: pulse 1s infinite; display: inline-block"
+                  >█</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== DEPLOYMENTS ===== -->
+      <section id="deployments" class="reveal">
+        <div class="section-header">
+          <span class="section-path">~/system/deployments/featured</span>
+          <h2 class="section-title">Engenharia de Impacto</h2>
+        </div>
+
+        <!-- CURRENT PROJECT BANNER -->
+        <div class="current-project-banner">
+          <div class="cpb-pulse">
+            <div class="cpb-dot"></div>
+            EM PRODUÇÃO
+          </div>
+          <div class="cpb-icon"><i class="fas fa-heartbeat"></i></div>
+          <div class="cpb-content">
+            <div class="cpb-subtitle">
+              Projeto Atual · Parceria Institucional
+            </div>
+            <div class="cpb-title">PET Saúde Digital</div>
+            <div class="cpb-desc">
+              Projeto ativo de parceria entre a
+              <strong>Universidade Federal do Piauí (UFPI)</strong> e a
+              <strong>Fundação Municipal de Saúde (FMS)</strong>. O programa
+              visa a inclusão digital e o letramento tecnológico de comunidades
+              em situação de vulnerabilidade, conectando cidadãos aos serviços
+              de saúde digitais como <strong>Gov.br</strong> e
+              <strong>SUS Digital</strong>. Como desenvolvedor do projeto, já
+              entregamos um sistema de controle de prontuários (Flask +
+              segurança por camadas) e hoje mantemos a plataforma de gestão de
+              participantes.
+            </div>
+            <div class="cpb-partners">
+              <div class="cpb-partner">
+                <i class="fas fa-university"></i> UFPI
+              </div>
+              <div class="cpb-partner">
+                <i class="fas fa-hospital"></i> Fundação Municipal de Saúde
+              </div>
+              <div class="cpb-partner">
+                <i class="fas fa-shield-alt"></i> CAPS
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="premium-projects">
+          <!-- PROJECT 1: PET SAÚDE DIGITAL (PWA) -->
+          <div class="premium-card health">
+            <div class="pc-content">
+              <div class="pc-badge green">PROJETO ATIVO · UFPI × FMS</div>
+              <h3 class="pc-title">PET Saúde — Gestão de Participantes</h3>
+              <div class="pc-story">
+                "A Fundação Municipal de Saúde precisava acompanhar dezenas de
+                turmas e centenas de participantes em múltiplos dispositivos,
+                offline, sem infraestrutura cara. Construí um PWA com
+                sincronização Firebase em tempo real e geração de relatórios
+                PDF, que hoje roda no navegador dos agentes de saúde direto da
+                UBS."
+              </div>
+              <p class="pc-desc">
+                Aplicação Web Progressiva (PWA) para gestão completa de
+                participantes do programa. Sincronização em tempo real via
+                <strong>Firebase Firestore</strong>, integração com
+                <strong>Google Drive OAuth</strong>, geração de
+                <strong>relatórios PDF</strong>, suporte offline e instalável
+                como app nativo — tudo em HTML/CSS/JS puro, zero build tools.
+              </p>
+              <div class="pc-tags">
+                <span class="tag-pill">PWA</span>
+                <span class="tag-pill">Firebase</span>
+                <span class="tag-pill">Google Drive API</span>
+                <span class="tag-pill">OAuth 2.0</span>
+                <span class="tag-pill">Service Worker</span>
+              </div>
+              <div class="pc-links">
+                <a
+                  href="https://github.com/victor-kauan-coder/pet-saude-acompanhamento-usuarios"
+                  target="_blank"
+                  class="pc-link"
+                  ><i class="fab fa-github"></i> GitHub</a
+                >
+              </div>
+            </div>
+            <div class="pc-visuals health">
+              <div class="mockup-window mw-1">
+                <div class="mockup-header">
+                  <div class="m-dot"></div>
+                  <div class="m-dot"></div>
+                  <div class="m-dot"></div>
+                </div>
+                <div class="mockup-content">
+                  <img
+                    src="./assets/pet-saude-dashboard.png"
+                    alt="Dashboard PET Saúde"
+                  />
+                </div>
+              </div>
+              <div class="mockup-window mw-2">
+                <div class="mockup-header">
+                  <div class="m-dot"></div>
+                  <div class="m-dot"></div>
+                  <div class="m-dot"></div>
+                </div>
+                <div class="mockup-content">
+                  <img
+                    src="./assets/pet-saude-relatorios.png"
+                    alt="Relatórios e Sync"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- PROJECT 2: STUDY AI — Whisper + RAG + LaTeX -->
+          <div class="premium-card studyai reverse">
+            <div class="pc-content">
+              <div class="pc-badge yellow">IA GENERATIVA · WHISPER + RAG</div>
+              <h3 class="pc-title">
+                StudyAI — Transcrição & Resumos Inteligentes
+              </h3>
+              <div class="pc-story">
+                "Cansei de perder conteúdo de aulas longas. Então construí um
+                pipeline que pega o áudio da aula, transcreve com Whisper, cruza
+                com os livros e slides da matéria via RAG, e gera
+                automaticamente resumos em LaTeX ou questões prontas para
+                importar no QuizzV — tudo numa interface React."
+              </div>
+              <p class="pc-desc">
+                Ferramenta de estudo inteligente com pipeline completo: upload
+                de áudio → transcrição via
+                <strong>OpenAI Whisper</strong> → busca semântica em livros e
+                slides da matéria com
+                <strong>RAG (Retrieval-Augmented Generation)</strong> → geração
+                de <strong>resumos em LaTeX</strong> ou
+                <strong>baterias de questões</strong> exportáveis direto para o
+                QuizzV. Interface construída em <strong>React</strong>,
+                integração nativa com o ecossistema QuizzV.
+              </p>
+              <div class="pc-tags">
+                <span class="tag-pill">React</span>
+                <span class="tag-pill">Whisper</span>
+                <span class="tag-pill">RAG</span>
+                <span class="tag-pill">LLM</span>
+                <span class="tag-pill">LaTeX</span>
+                <span class="tag-pill">Python</span>
+                <span class="tag-pill">NLP</span>
+              </div>
+              <div class="pc-links">
+                <a
+                  href="https://github.com/victor-kauan-coder"
+                  target="_blank"
+                  class="pc-link"
+                  ><i class="fab fa-github"></i> GitHub</a
+                >
+                <a
+                  href="#deployments"
+                  class="pc-link"
+                  style="
+                    border-color: rgba(192, 132, 252, 0.3);
+                    color: var(--brand-accent);
+                    background: rgba(192, 132, 252, 0.05);
+                  "
+                  ><i class="fas fa-link"></i> Integra com QuizzV</a
+                >
+              </div>
+            </div>
+            <div class="pc-visuals studyai">
+              <div class="mockup-window mw-1">
+                <div class="mockup-header">
+                  <div class="m-dot"></div>
+                  <div class="m-dot"></div>
+                  <div class="m-dot"></div>
+                </div>
+                <div class="mockup-content">
+                  <img src="./assets/resumo.png" alt="Whisper Transcription" />
+                </div>
+              </div>
+              <div class="mockup-window mw-2">
+                <div class="mockup-header">
+                  <div class="m-dot"></div>
+                  <div class="m-dot"></div>
+                  <div class="m-dot"></div>
+                </div>
+                <div class="mockup-content">
+                  <img src="./assets/quizzV.png" alt="RAG LaTeX Output" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- PROJECT 3: VERILOG -->
+          <div class="premium-card verilog">
+            <div class="pc-content">
+              <div class="pc-badge purple">PLATAFORMA EDUCACIONAL</div>
+              <h3 class="pc-title">Verilog de Forma Didática</h3>
+              <div class="pc-story">
+                "Durante meu período como monitor, vi o desespero de dezenas de
+                alunos tentando entender a abstração de hardware e formas de
+                onda. Construí esta plataforma não apenas como código, mas como
+                uma ponte para democratizar o ensino de Arquitetura de
+                Computadores."
+              </div>
+              <p class="pc-desc">
+                Plataforma educacional que conteineriza processos via
+                <strong>Docker API</strong>, permitindo que alunos escrevam,
+                sintetizem via <strong>Yosys</strong> e simulem no
+                <strong>Icarus Verilog</strong> diretamente pelo navegador.
+              </p>
+              <div class="pc-tags">
+                <span class="tag-pill">React</span>
+                <span class="tag-pill">FastAPI</span>
+                <span class="tag-pill">Docker</span>
+                <span class="tag-pill">Yosys</span>
+                <span class="tag-pill">Icarus Verilog</span>
+              </div>
+            </div>
+            <div class="pc-visuals verilog">
+              <div class="mockup-window mw-1">
+                <div class="mockup-header">
+                  <div class="m-dot"></div>
+                  <div class="m-dot"></div>
+                  <div class="m-dot"></div>
+                </div>
+                <div class="mockup-content">
+                  <img
+                    src="https://placehold.co/800x450/0f172a/c084fc/png?text=Síntese+Yosys"
+                    alt="Yosys"
+                  />
+                </div>
+              </div>
+              <div class="mockup-window mw-2">
+                <div class="mockup-header">
+                  <div class="m-dot"></div>
+                  <div class="m-dot"></div>
+                  <div class="m-dot"></div>
+                </div>
+                <div class="mockup-content">
+                  <img
+                    src="https://placehold.co/800x450/0f172a/38bdf8/png?text=Em andamento..."
+                    alt="Verilog Editor"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- PROJECT 4: QUIZZV -->
+          <div class="premium-card quizzv reverse">
+            <div class="pc-content">
+              <div class="pc-badge blue">
+                PRODUTO FULL-STACK · IA GENERATIVA
+              </div>
+              <h3 class="pc-title">QuizzV Ecosystem</h3>
+              <p class="pc-desc">
+                Ecossistema multiplataforma (Mobile & Desktop) impulsionado por
+                Inteligência Artificial Generativa. Processa documentos PDF,
+                extrai contextos via técnicas de <strong>NLP e RAG</strong>, e
+                solicita dinamicamente que LLMs gerem baterias inteiras de
+                quizzes estruturados.
+              </p>
+              <div class="pc-tags">
+                <span class="tag-pill">Python</span>
+                <span class="tag-pill">RAG</span>
+                <span class="tag-pill">LLM</span>
+                <span class="tag-pill">React Native</span>
+                <span class="tag-pill">IA Generativa</span>
+              </div>
+              <div class="pc-links">
+                <a
+                  href="https://github.com/victor-kauan-coder/QuizzV"
+                  target="_blank"
+                  class="pc-link"
+                  ><i class="fab fa-github"></i> GitHub</a
+                >
+              </div>
+            </div>
+            <div class="pc-visuals quizzv">
+              <div class="mockup-window mw-desktop">
+                <div class="mockup-header">
+                  <div class="m-dot"></div>
+                  <div class="m-dot"></div>
+                  <div class="m-dot"></div>
+                </div>
+                <div class="mockup-content">
+                  <img src="./assets/quizzv-pc.jpeg" alt="QuizzV Desktop" />
+                </div>
+              </div>
+              <div class="mockup-window mw-mobile">
+                <div class="mockup-header"></div>
+                <div class="mockup-content">
+                  <img src="./assets/quizzv-android.jpeg" alt="QuizzV Mobile" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== CORE SYSTEMS ===== -->
+      <section class="reveal" style="margin-top: 100px">
+        <div class="section-header">
+          <span class="section-path">~/system/deployments/core_systems</span>
+          <h2 class="section-title">Módulos do Sistema</h2>
+        </div>
+
+        <div class="core-grid">
+          <div class="core-card">
+            <div class="cc-icon"><i class="fas fa-microchip"></i></div>
+            <h3 class="cc-title">Processador RISC-V</h3>
+            <p class="cc-desc">
+              Implementação em hardware (Verilog) de uma CPU baseada na
+              arquitetura RISC-V. Foco em otimização de caminhos de dados e
+              pipelines lógicos. Projeto de baixo nível que demonstra domínio da
+              arquitetura de computadores.
+            </p>
+            <a
+              href="https://github.com/SoaresDavidson/RV32I-pipeline"
+              target="_blank"
+              class="cc-link"
+              ><i class="fas fa-link"></i> Ver no GitHub</a
+            >
+          </div>
+
+          <div class="core-card">
+            <div class="cc-icon purple"><i class="fas fa-eye"></i></div>
+            <h3 class="cc-title">Angry Birds 3D — OpenGL</h3>
+            <p class="cc-desc">
+              Recriação do clássico em 3D usando
+              <strong>OpenGL + GLUT</strong> em C++. Demonstra domínio de
+              computação gráfica, renderização 3D e física simulada. Projeto que
+              gerou maior número de estrelas no GitHub.
+            </p>
+            <a
+              href="https://github.com/victor-kauan-coder/AngryBirds3D_OpenGL_Glut"
+              target="_blank"
+              class="cc-link"
+              ><i class="fab fa-github"></i> Ver no GitHub</a
+            >
+          </div>
+
+          <div class="core-card">
+            <div class="cc-icon green">
+              <i class="fas fa-file-medical-alt"></i>
+            </div>
+            <h3 class="cc-title">Prontuário Flask — PET Saúde</h3>
+            <p class="cc-desc">
+              Sistema de controle de prontuários desenvolvido para a parceria
+              UFPI × FMS. Backend em <strong>Flask</strong> com autenticação
+              segura (<strong>JWT, bcrypt, RBAC</strong>), validação de dados e
+              endpoints REST para gestão de registros de saúde.
+            </p>
+            <a
+              href="https://github.com/victor-kauan-coder"
+              target="_blank"
+              class="cc-link"
+              ><i class="fab fa-github"></i> Ver no GitHub</a
+            >
+          </div>
+
+          <div class="core-card">
+            <div class="cc-icon yellow"><i class="fas fa-chart-bar"></i></div>
+            <h3 class="cc-title">Dashboard de Relatórios</h3>
+            <p class="cc-desc">
+              Sistema de relatórios e visualização de dados desenvolvido em
+              Python. Geração automatizada de dashboards e exportação de
+              documentos para acompanhamento de métricas institucionais.
+            </p>
+            <a
+              href="https://github.com/victor-kauan-coder/dashboard-relatorios"
+              target="_blank"
+              class="cc-link"
+              ><i class="fab fa-github"></i> Ver no GitHub</a
+            >
+          </div>
+
+          <div class="core-card">
+            <div class="cc-icon yellow"><i class="fas fa-eye"></i></div>
+            <h3 class="cc-title">OMR Scanner — CESLA/UFPI</h3>
+            <p class="cc-desc">
+              API de Reconhecimento Óptico de Marcações desenvolvida no
+              laboratório CESLA. Usa <strong>OpenCV</strong> para detecção de
+              contornos, correção de perspectiva e leitura de bolhas em
+              gabaritos. Backend <strong>Flask</strong> com endpoints REST.
+            </p>
+            <a
+              href="https://github.com/victor-kauan-coder/api-omr-caps"
+              target="_blank"
+              class="cc-link"
+              ><i class="fab fa-github"></i> Ver no GitHub</a
+            >
+          </div>
+
+          <div class="core-card">
+            <div class="cc-icon purple"><i class="fas fa-gamepad"></i></div>
+            <h3 class="cc-title">8-Puzzle Containerizado</h3>
+            <p class="cc-desc">
+              Resolução clássica do 8-puzzle com backend construído em
+              <strong>Rust</strong>, entregando alta performance para o
+              processamento lógico, integrado a um frontend React.
+              Containerizado com Docker para deploy simplificado.
+            </p>
+            <a
+              href="https://github.com/victor-kauan-coder"
+              target="_blank"
+              class="cc-link"
+              ><i class="fab fa-github"></i> Ver no GitHub</a
+            >
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== INTERACTIVE TERMINAL ===== -->
+      <section id="terminal" class="interactive-section reveal">
+        <div class="section-header">
+          <span class="section-path">~/system/terminal --interactive</span>
+          <h2 class="section-title">Terminal Interativo</h2>
+        </div>
+
+        <div class="iterm-wrapper">
+          <div class="iterm-topbar">
+            <div class="iterm-dots">
+              <div class="iterm-dot r"></div>
+              <div class="iterm-dot y"></div>
+              <div class="iterm-dot g"></div>
+            </div>
+            <div class="iterm-title">victor@vk-os:~$ — bash 5.2.21</div>
+          </div>
+          <div class="iterm-body" id="iterm-body">
+            <div class="iterm-output" id="iterm-output">
+              <div class="iterm-line out-green">
+                VK_OS v2.6.0 — Portfolio Terminal
+              </div>
+              <div class="iterm-line out">
+                Type <span style="color: var(--brand-primary)">help</span> to
+                see available commands.
+              </div>
+              <div class="iterm-line separator">
+                ──────────────────────────────────────────
+              </div>
+            </div>
+            <div class="iterm-input-row">
+              <span class="iterm-ps1">victor@vk-os:~$</span>
+              <input
+                type="text"
+                class="iterm-input"
+                id="iterm-input"
+                autocomplete="off"
+                spellcheck="false"
+                placeholder="type a command..."
+              />
+            </div>
+          </div>
+          <div class="iterm-hint">
+            <span onclick="runCmd('help')">help</span>
+            <span onclick="runCmd('whoami')">whoami</span>
+            <span onclick="runCmd('skills')">skills</span>
+            <span onclick="runCmd('projects')">projects</span>
+            <span onclick="runCmd('lab')">lab</span>
+            <span onclick="runCmd('contact')">contact</span>
+            <span onclick="runCmd('pet --info')">pet --info</span>
+            <span onclick="runCmd('clear')">clear</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== FOOTER ===== -->
+      <footer class="footer-section reveal">
+        <h2 class="footer-title">Vamos Iniciar um Handshake?</h2>
+        <p
+          style="
+            color: var(--text-300);
+            font-size: 1.1rem;
+            max-width: 500px;
+            line-height: 1.6;
+          "
+        >
+          Sempre aberto a discutir novas arquiteturas de software, integrações
+          de IA, visão computacional ou desafios em saúde digital.
+        </p>
+
+        <div class="social-dock">
+          <a
+            href="https://github.com/victor-kauan-coder"
+            target="_blank"
+            class="s-icon"
+            title="GitHub"
+            ><i class="fab fa-github"></i
+          ></a>
+          <a
+            href="https://linkedin.com/in/victor-miranda-5342a6337"
+            target="_blank"
+            class="s-icon"
+            title="LinkedIn"
+            ><i class="fab fa-linkedin-in"></i
+          ></a>
+          <a href="mailto:victor.kauan@ufpi.edu.br" class="s-icon" title="Email"
+            ><i class="fas fa-envelope"></i
+          ></a>
+          <a
+            href="https://wa.me/5586999999999"
+            target="_blank"
+            class="s-icon"
+            title="WhatsApp"
+            ><i class="fab fa-whatsapp"></i
+          ></a>
+        </div>
+
+        <p
+          style="
+            margin-top: 50px;
+            font-family: var(--font-code);
+            color: var(--text-400);
+            font-size: 12px;
+          "
+        >
+          © 2026 Victor Kauan · UFPI · CESLA · Escrito sem frameworks, apenas
+          HTML, CSS e Vanilla JS puro.
+        </p>
+      </footer>
+    </div>
+
+    <script>
+      // ========================= 1. BOOT SEQUENCE =========================
+      document.addEventListener("DOMContentLoaded", () => {
+        const bootLines = document.querySelectorAll(".boot-line");
+        let delay = 0;
+        document.body.style.overflow = "hidden";
+
+        bootLines.forEach((line, index) => {
+          delay += Math.random() * 280 + 130;
+          setTimeout(() => {
+            line.style.display = "block";
+            if (index === bootLines.length - 1) {
+              setTimeout(() => {
+                const bs = document.getElementById("boot-screen");
+                bs.style.opacity = "0";
+                bs.style.transition = "opacity 0.8s ease";
+                setTimeout(() => {
+                  bs.style.display = "none";
+                  document.body.style.overflow = "auto";
+                  document.body.style.overflowX = "hidden";
+                }, 800);
+              }, 1000);
+            }
+          }, delay);
+        });
+      });
+
+      // ========================= 2. SYSTEM CLOCK =========================
+      setInterval(() => {
+        document.getElementById("clock").innerText =
+          new Date().toLocaleTimeString("pt-BR", { hour12: false });
+      }, 1000);
+
+      // ========================= 3. CANVAS PARTICLE NETWORK =========================
+      const canvas = document.getElementById("network-canvas");
+      const ctx = canvas.getContext("2d");
+      let particles = [];
+      let mouseX = 0,
+        mouseY = 0;
+
+      function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        initParticles();
+      }
+      window.addEventListener("resize", resizeCanvas);
+      window.addEventListener("mousemove", (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+      });
+
+      class Particle {
+        constructor() {
+          this.reset();
+        }
+        reset() {
+          this.x = Math.random() * canvas.width;
+          this.y = Math.random() * canvas.height;
+          this.vx = (Math.random() - 0.5) * 0.5;
+          this.vy = (Math.random() - 0.5) * 0.5;
+          this.size = Math.random() * 2;
+          this.baseColor =
+            Math.random() > 0.5 ? "rgba(56,189,248," : "rgba(129,140,248,";
+        }
+        update() {
+          this.x += this.vx;
+          this.y += this.vy;
+          if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+          if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+        }
+        draw() {
+          ctx.fillStyle = this.baseColor + "0.5)";
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
+      function initParticles() {
+        particles = [];
+        const qty = Math.floor((canvas.width * canvas.height) / 12000);
+        for (let i = 0; i < qty; i++) particles.push(new Particle());
+      }
+
+      function animateCanvas() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        for (let i = 0; i < particles.length; i++) {
+          particles[i].update();
+          particles[i].draw();
+          const dm = Math.hypot(
+            particles[i].x - mouseX,
+            particles[i].y - mouseY,
+          );
+          if (dm < 150) {
+            ctx.beginPath();
+            ctx.strokeStyle = `rgba(56,189,248,${0.5 - dm / 300})`;
+            ctx.lineWidth = 1;
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(mouseX, mouseY);
+            ctx.stroke();
+          }
+          for (let j = i + 1; j < particles.length; j++) {
+            const dist = Math.hypot(
+              particles[i].x - particles[j].x,
+              particles[i].y - particles[j].y,
+            );
+            if (dist < 120) {
+              ctx.beginPath();
+              ctx.strokeStyle = `rgba(255,255,255,${0.15 - dist / 800})`;
+              ctx.lineWidth = 0.5;
+              ctx.moveTo(particles[i].x, particles[i].y);
+              ctx.lineTo(particles[j].x, particles[j].y);
+              ctx.stroke();
+            }
+          }
+        }
+        requestAnimationFrame(animateCanvas);
+      }
+      resizeCanvas();
+      animateCanvas();
+
+      // ========================= 4. SCROLL REVEAL =========================
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) e.target.classList.add("active");
+          });
+        },
+        { threshold: 0.08, rootMargin: "0px 0px -50px 0px" },
+      );
+      document
+        .querySelectorAll(".reveal")
+        .forEach((el) => observer.observe(el));
+
+      // ========================= 5. INTERACTIVE TERMINAL =========================
+      const itermOutput = document.getElementById("iterm-output");
+      const itermInput = document.getElementById("iterm-input");
+      const itermBody = document.getElementById("iterm-body");
+
+      const COMMANDS = {
+        help: () => [
+          { cls: "out-green", t: "Available commands:" },
+          { cls: "out", t: "  whoami      — About Victor Kauan" },
+          { cls: "out", t: "  skills      — Tech stack & expertise" },
+          { cls: "out", t: "  projects    — All projects overview" },
+          { cls: "out", t: "  lab         — CESLA lab & research" },
+          { cls: "out", t: "  pet --info  — PET Saúde Digital project" },
+          { cls: "out", t: "  contact     — Get in touch" },
+          { cls: "out", t: "  github      — Open GitHub profile" },
+          { cls: "out", t: "  date        — Current date/time" },
+          { cls: "out", t: "  clear       — Clear terminal" },
+          { cls: "separator", t: "──────────────────────────────────" },
+        ],
+
+        whoami: () => [
+          { cls: "out-green", t: "Victor Kauan Miranda" },
+          { cls: "out", t: "Fullstack Developer · CS @ UFPI" },
+          { cls: "out", t: "Research Member @ CESLA (Computer Vision Lab)" },
+          { cls: "out", t: "Developer @ PET Saúde Digital — UFPI × FMS" },
+          { cls: "separator", t: "" },
+          {
+            cls: "out",
+            t: "Specialties: AI/ML · Computer Vision · Low-Level Arch · Security",
+          },
+        ],
+
+        skills: () => [
+          { cls: "out-blue", t: "[ Languages ]" },
+          { cls: "out", t: "  Python ███████████ Expert" },
+          { cls: "out", t: "  JavaScript ████████░ Advanced" },
+          { cls: "out", t: "  Rust ██████░░░░ Intermediate" },
+          { cls: "out", t: "  C/C++ ██████░░░░ Intermediate" },
+          { cls: "out", t: "  Verilog █████░░░░░ Intermediate" },
+          { cls: "separator", t: "" },
+          { cls: "out-blue", t: "[ Frameworks & Tools ]" },
+          {
+            cls: "out",
+            t: "  Flask · FastAPI · Django · React · React Native",
+          },
+          { cls: "separator", t: "" },
+          { cls: "out-blue", t: "[ Computer Vision ]" },
+          { cls: "out", t: "  OpenCV · YOLO · PyTorch · OMR Systems" },
+          { cls: "separator", t: "" },
+          { cls: "out-blue", t: "[ Security ]" },
+          { cls: "out", t: "  JWT · bcrypt · RBAC · HTTPS · OAuth 2.0" },
+          { cls: "separator", t: "" },
+          { cls: "out-blue", t: "[ Infrastructure ]" },
+          { cls: "out", t: "  Docker · Linux · Firebase · MySQL · PostgreSQL" },
+        ],
+
+        projects: () => [
+          { cls: "out-green", t: "[ Active Projects ]" },
+          {
+            cls: "out",
+            t: "  ★ PET Saúde Digital — PWA (Firebase + OAuth + PDF)",
+          },
+          { cls: "separator", t: "" },
+          { cls: "out-yellow", t: "[ AI / GenAI / NLP ]" },
+          {
+            cls: "out",
+            t: "  ★ StudyAI — Whisper + RAG + LaTeX + QuizzV Export",
+          },
+          { cls: "out", t: "  ★ QuizzV — RAG + LLM + React Native" },
+          { cls: "separator", t: "" },
+          { cls: "out-blue", t: "[ Educational Platforms ]" },
+          { cls: "out", t: "  ★ Verilog Didático (Docker + FastAPI + React)" },
+          { cls: "separator", t: "" },
+          { cls: "out-accent", t: "[ Research (CESLA) ]" },
+          { cls: "out", t: "  ★ api-omr-caps — OMR Scanner (OpenCV + Flask)" },
+          { cls: "separator", t: "" },
+          { cls: "out", t: "[ Hardware / Low-Level ]" },
+          { cls: "out", t: "  ★ RISC-V RV32I Pipeline (Verilog)" },
+          { cls: "out", t: "  ★ Angry Birds 3D OpenGL (C++)" },
+        ],
+
+        lab: () => [
+          {
+            cls: "out-green",
+            t: "CESLA — Centro de Estudos de Sistemas e Laboratório Aplicado",
+          },
+          {
+            cls: "out",
+            t: "Federal University of Piauí (UFPI) · Teresina, Piauí, Brazil",
+          },
+          { cls: "separator", t: "" },
+          { cls: "out-blue", t: "Research Focus: Computer Vision" },
+          { cls: "out", t: "  · Optical Mark Recognition (OMR)" },
+          { cls: "out", t: "  · Image Processing & Contour Detection" },
+          { cls: "out", t: "  · Neural Network Applications (CNNs, YOLO)" },
+          { cls: "out", t: "  · REST API integration for vision systems" },
+          { cls: "separator", t: "" },
+          { cls: "out", t: "Current project: api-omr-caps (Flask + OpenCV)" },
+        ],
+
+        "pet --info": () => [
+          {
+            cls: "out-green",
+            t: "PET Saúde Digital — Programa de Educação pelo Trabalho",
+          },
+          { cls: "separator", t: "" },
+          { cls: "out-blue", t: "Partnership:" },
+          {
+            cls: "out",
+            t: "  UFPI × Fundação Municipal de Saúde (FMS) × CAPS",
+          },
+          { cls: "separator", t: "" },
+          { cls: "out-blue", t: "Mission:" },
+          {
+            cls: "out",
+            t: "  Digital literacy & inclusion for vulnerable communities",
+          },
+          { cls: "out", t: "  Connecting citizens to Gov.br and SUS Digital" },
+          { cls: "separator", t: "" },
+          { cls: "out-blue", t: "Delivered Systems:" },
+          {
+            cls: "out",
+            t: "  1. Prontuário Control System (Flask + JWT + bcrypt + RBAC)",
+          },
+          {
+            cls: "out",
+            t: "  2. Participant Management PWA (Firebase + Google Drive API)",
+          },
+          { cls: "separator", t: "" },
+          { cls: "out-yellow", t: "Status: ACTIVE PRODUCTION" },
+        ],
+
+        contact: () => [
+          { cls: "out-blue", t: "Contact Victor Kauan:" },
+          { cls: "out", t: "  Email:    victor.kauan@ufpi.edu.br" },
+          { cls: "out", t: "  GitHub:   github.com/victor-kauan-coder" },
+          {
+            cls: "out",
+            t: "  LinkedIn: linkedin.com/in/victor-miranda-5342a6337",
+          },
+        ],
+
+        github: () => {
+          window.open("https://github.com/victor-kauan-coder", "_blank");
+          return [{ cls: "out-green", t: "Opening GitHub profile..." }];
+        },
+
+        date: () => [{ cls: "out-green", t: new Date().toString() }],
+
+        clear: () => {
+          itermOutput.innerHTML = "";
+          return [];
+        },
+      };
+
+      function runCmd(raw) {
+        const cmd = raw.trim().toLowerCase();
+        if (!cmd) return;
+
+        // Print the command
+        const cmdLine = document.createElement("div");
+        cmdLine.className = "iterm-line cmd";
+        cmdLine.textContent = `victor@vk-os:~$ ${raw}`;
+        itermOutput.appendChild(cmdLine);
+
+        // Find handler
+        const handler = COMMANDS[cmd] || COMMANDS[cmd.split(" ")[0]];
+        let lines = [];
+        if (handler) {
+          lines = handler();
+        } else {
+          lines = [
+            { cls: "err", t: `bash: ${cmd}: command not found` },
+            { cls: "out", t: "Type 'help' for available commands." },
+          ];
+        }
+
+        lines.forEach(({ cls, t }) => {
+          if (cls === "separator" && !t) {
+            const div = document.createElement("div");
+            div.style.marginBottom = "6px";
+            itermOutput.appendChild(div);
+          } else {
+            const div = document.createElement("div");
+            div.className = `iterm-line ${cls}`;
+            div.textContent = t;
+            itermOutput.appendChild(div);
+          }
+        });
+
+        // Spacer
+        const sp = document.createElement("div");
+        sp.style.marginBottom = "6px";
+        itermOutput.appendChild(sp);
+
+        // Scroll to bottom
+        itermBody.scrollTop = itermBody.scrollHeight;
+        itermInput.value = "";
+      }
+
+      // History
+      let history = [],
+        histIdx = -1;
+
+      itermInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          const cmd = itermInput.value.trim();
+          if (cmd) {
+            history.unshift(cmd);
+            histIdx = -1;
+          }
+          runCmd(itermInput.value);
+        } else if (e.key === "ArrowUp") {
+          e.preventDefault();
+          if (histIdx < history.length - 1) {
+            histIdx++;
+            itermInput.value = history[histIdx];
+          }
+        } else if (e.key === "ArrowDown") {
+          e.preventDefault();
+          if (histIdx > 0) {
+            histIdx--;
+            itermInput.value = history[histIdx];
+          } else {
+            histIdx = -1;
+            itermInput.value = "";
+          }
+        } else if (e.key === "Tab") {
+          e.preventDefault();
+          const partial = itermInput.value.toLowerCase();
+          const match = Object.keys(COMMANDS).find((k) =>
+            k.startsWith(partial),
+          );
+          if (match) itermInput.value = match;
+        }
+      });
+
+      // Click anywhere in terminal body to focus input
+      document
+        .getElementById("iterm-body")
+        .addEventListener("click", () => itermInput.focus());
+    </script>
+  </body>
+</html>
