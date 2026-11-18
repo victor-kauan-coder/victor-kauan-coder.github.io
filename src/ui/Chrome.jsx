@@ -162,10 +162,10 @@ export function Lightbox() {
 
 // Tela de carregamento do mundo 3D: some sozinha quando o essencial chegou (ou depois de 12 s, para nunca prender ninguém).
 export function Loading() {
-  const { progress, active } = useProgress();
+  const { progress } = useProgress();
   const [gone, setGone] = useState(false);
   useEffect(() => { const t = setTimeout(() => setGone(true), 30000); return () => clearTimeout(t); }, []);
-  useEffect(() => { if (!active && progress >= 100) { const t = setTimeout(() => setGone(true), 400); return () => clearTimeout(t); } }, [active, progress]);
+  useEffect(() => { if (progress >= 100) { const t = setTimeout(() => setGone(true), 700); return () => clearTimeout(t); } }, [progress]);
   return (
     <div className={`loading ${gone ? 'done' : ''}`} aria-hidden={gone}>
       <div>

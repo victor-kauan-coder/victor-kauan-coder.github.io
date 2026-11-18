@@ -35,15 +35,15 @@ export const stops = stations.map((s, i) => {
 });
 export function height(x, z) {
   let h = rawHeight(x, z);
-  const { d, i } = nearestRoad(x, z);
-  const rh = smoothH[i] - 0.5;
-  const k = THREE.MathUtils.smoothstep(d, ROAD_W * 0.6, ROAD_W * 2.6);
-  h = THREE.MathUtils.lerp(rh, h, k);
+  // 1) platôs planos dos lugares
   for (const s of stops) {
     const dd = Math.hypot(x - s.c.x, z - s.c.z);
     if (dd < 26) h = THREE.MathUtils.lerp(s.h, h, THREE.MathUtils.smoothstep(dd, 14, 26));
   }
-  return h;
+  // 2) a estrada vence sempre: o chão fica um pouco abaixo do asfalto numa faixa larga, sem morro por cima
+  const { d, i } = nearestRoad(x, z);
+  const rh = smoothH[i] - 0.45;
+  return THREE.MathUtils.lerp(rh, h, THREE.MathUtils.smoothstep(d, ROAD_W * 0.75, ROAD_W * 2.4));
 }
 // altura de cada platô = altura da estrada ali
 stops.forEach((s) => { const { i } = nearestRoad(s.road.x, s.road.z); s.h = smoothH[i] - 0.1; s.c.y = s.h; s.road.y = s.h; });

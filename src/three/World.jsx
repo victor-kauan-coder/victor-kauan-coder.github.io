@@ -88,10 +88,10 @@ function Road() {
   }, []);
   return (
     <group>
-      <mesh geometry={geos.road} receiveShadow><meshStandardMaterial color="#4b4f5c" roughness={0.9} side={THREE.DoubleSide} /></mesh>
-      <mesh geometry={geos.l}><meshStandardMaterial color="#f4f4f4" side={THREE.DoubleSide} /></mesh>
-      <mesh geometry={geos.r}><meshStandardMaterial color="#f4f4f4" side={THREE.DoubleSide} /></mesh>
-      <mesh geometry={geos.mid}><meshStandardMaterial color="#ffd23f" side={THREE.DoubleSide} /></mesh>
+      <mesh geometry={geos.road} receiveShadow><meshStandardMaterial color="#4b4f5c" roughness={0.9} side={THREE.DoubleSide} polygonOffset polygonOffsetFactor={-2} polygonOffsetUnits={-2} /></mesh>
+      <mesh geometry={geos.l}><meshStandardMaterial color="#f4f4f4" side={THREE.DoubleSide} polygonOffset polygonOffsetFactor={-4} polygonOffsetUnits={-4} /></mesh>
+      <mesh geometry={geos.r}><meshStandardMaterial color="#f4f4f4" side={THREE.DoubleSide} polygonOffset polygonOffsetFactor={-4} polygonOffsetUnits={-4} /></mesh>
+      <mesh geometry={geos.mid}><meshStandardMaterial color="#ffd23f" side={THREE.DoubleSide} polygonOffset polygonOffsetFactor={-4} polygonOffsetUnits={-4} /></mesh>
     </group>
   );
 }

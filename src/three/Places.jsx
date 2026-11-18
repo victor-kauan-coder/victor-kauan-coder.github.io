@@ -45,10 +45,10 @@ function Common({ id, sub, board = [3.8, 0, -5.6], boardRot = -0.3, props = true
   const lights = useMemo(() => Array.from({ length: 15 }, (_, i) => -7 + i), []);
   return (
     <>
-      <Model name="rugRectangle" scale={[8, 1, 7]} position={[0, 0.02, -1.4]} />
+      <Model name="rugRectangle" scale={[8, 1, 7]} position={[0, 0.06, -1.4]} shadow={false} />
       {big(id).length > 0 && (
         <group position={board} rotation-y={boardRot} scale={6}>
-          <Model name="billboard" />
+          <Model name="billboard" rotation-y={Math.PI} />
           <BillboardScreen name="billboard" list={big(id)} />
         </group>
       )}
