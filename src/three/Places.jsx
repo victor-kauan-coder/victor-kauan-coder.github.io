@@ -2,7 +2,7 @@ import { useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { RigidBody, CuboidCollider } from '@react-three/rapier';
 import * as THREE from 'three';
-import { Model } from './World.jsx';
+import { Model, SolidCtx } from './World.jsx';
 import { Character, ScreenOn, ShotMat, Prop } from './Actors.jsx';
 import { useTermoDashboard, useLedSign } from './live.js';
 import { stations } from '../data/projects.js';
@@ -14,12 +14,13 @@ import { sling, unlock } from '../store.js';
 // medidas em metros, chão em y = 0. TODOS os objetos são modelos baixados (Kenney, CC0; Poly Haven, CC0).
 const S = Object.fromEntries(stations.map((s) => [s.id, s]));
 const F = 2.2; // escala dos móveis da Kenney
-const big = (id) => S[id].shots.filter((x) => !x.tall).map((x) => x.src);
+// telas no 3D usam a versão de 1024 px (o lightbox continua com a grande)
+const big = (id) => S[id].shots.filter((x) => !x.tall).map((x) => x.src.replace(/\.webp$/, '-m.webp'));
 // área da tela de cada modelo baixado, em frações da caixa envolvente (calibrado olhando os modelos)
 const R = {
   computerScreen: [0.08, 0.3, 0.92, 0.94],
   televisionModern: [0.05, 0.12, 0.95, 0.94],
-  billboard: [0.06, 0.38, 0.94, 0.96],
+  billboard: [0.02, 0.36, 0.98, 0.98],
   signpost: [0.08, 0.5, 0.92, 0.95],
 };
 
@@ -45,13 +46,8 @@ function Common({ id, sub, board = [3.8, 0, -5.6], boardRot = -0.3, props = true
   const lights = useMemo(() => Array.from({ length: 15 }, (_, i) => -7 + i), []);
   return (
     <>
-      <Model name="rugRectangle" scale={[8, 1, 7]} position={[0, 0.06, -1.4]} shadow={false} />
-      {big(id).length > 0 && (
-        <group position={board} rotation-y={boardRot} scale={6}>
-          <Model name="billboard" rotation-y={Math.PI} />
-          <BillboardScreen name="billboard" list={big(id)} />
-        </group>
-      )}
+      <Model name="rugRectangle" scale={[8, 1, 7]} position={[0, 0.06, -1.4]} shadow={false} solid={false} />
+      {big(id).length > 0 && <ScreenOn name="billboard" src={big(id)} rect={R.billboard} scale={6} position={board} rotation-y={boardRot} />}
       <ScreenOn name="signpost" map={label} rect={R.signpost} scale={5} position={[6.4, 0, 2.6]} rotation-y={-0.8} />
       <Model name="bannerTowerRed" scale={3.4} position={[-7.6, 0, -6.6]} />
       <Model name="bannerTowerGreen" scale={3.4} position={[7.6, 0, -6.6]} />
@@ -67,18 +63,6 @@ function Common({ id, sub, board = [3.8, 0, -5.6], boardRot = -0.3, props = true
     </>
   );
 }
-function BillboardScreen({ name, list }) {
-  const { min, max } = useMemo(() => ({ min: [-0.5, 0, -0.24], max: [0.5, 1, 0.24] }), []);
-  const [x0, y0, x1, y1] = R[name];
-  const w = (max[0] - min[0]) * (x1 - x0), h = (max[1] - min[1]) * (y1 - y0);
-  return (
-    <mesh position={[min[0] + (max[0] - min[0]) * (x0 + x1) / 2, min[1] + (max[1] - min[1]) * (y0 + y1) / 2, 0.03]}>
-      <planeGeometry args={[w, h]} />
-      <ShotMat src={list} aspect={w / h} />
-    </mesh>
-  );
-}
-
 // ---------- TermoLOG: laboratório com bancada, nó central (antena) e câmara fria ----------
 function TermoPlace() {
   const dash = useTermoDashboard();
@@ -213,7 +197,7 @@ function FarmPlace() {
       <Model name="workbench" scale={4} position={[1.6, 0, -3]} />
       <Model name="bucket" scale={4} position={[0.4, 0, -3.2]} />
       <Model name="barrel" scale={3} position={[3.2, 0, -3.4]} />
-      {[-4.6, -3.9, -3.2].map((x) => <Model key={x} name="crops_cornStageD" scale={2.6} position={[x, 0, 1]} />)}
+      {[-4.6, -3.9, -3.2].map((x) => <Model key={x} name="crops_cornStageD" scale={1.6} position={[x, 0, 1]} />)}
       <Model name="crop_pumpkin" scale={2.4} position={[4.4, 0, -1.4]} />
     </group>
   );
@@ -249,7 +233,7 @@ function Tower() {
   return cells.map((p, i) => (
     <RigidBody key={i} ref={(r) => (bodies.current[i] = r)} colliders={false} position={p} mass={0.6} canSleep>
       <CuboidCollider args={[0.36, 0.3, 0.36]} />
-      <Model name="box" scale={2.6} position={[0, -0.3, 0]} />
+      <Model name="box" scale={2.6} position={[0, -0.3, 0]} solid={false} />
     </RigidBody>
   ));
 }
@@ -267,5 +251,7 @@ function ArcadePlace() {
     </group>
   );
 }
+
+export function SolidPlace({ children }) { return <SolidCtx.Provider value>{children}</SolidCtx.Provider>; }
 
 export const PLACES = { termolog: TermoPlace, vcall: VcallPlace, songv: SongPlace, duckv: DuckPlace, farmacia: PharmaPlace, voto: VotoPlace, esmartigado: FarmPlace, clock: ClockPlace, angry: ArcadePlace };

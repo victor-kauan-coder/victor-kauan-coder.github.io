@@ -313,3 +313,11 @@ input[type='range'] { accent-color: var(--hot); width: 100%; }
 kbd { font: 600 11.5px var(--mono); color: var(--text); background: #1a1f2e; border: 1px solid #2c3346; border-bottom-width: 2px; border-radius: 5px; padding: 1px 6px; }
 @media (pointer: coarse) { .keys { display: none; } .speedo { bottom: 170px; width: 92px; height: 92px; } .minimap { width: 120px; height: 120px; } }
 @media (max-height: 640px), (max-width: 560px) { .minimap { width: 110px; height: 110px; top: 64px; right: 12px; } .speedo { width: 84px; height: 84px; right: 12px; bottom: 12px; } .speedo strong { font-size: 22px; } .speedo span { bottom: 18px; } .keys { display: none; } }
+
+@media (max-height: 720px) { .game-card { grid-template-columns: 1fr; width: min(380px, calc(100vw - 32px)); padding: 14px; bottom: 16px; } .game-card img, .game-card .metrics { display: none; } .game-card h2 { font-size: 18px; } .game-card p { font-size: 13.5px; } .game-card .btn { min-height: 38px; } }
+
+/* cartão do lugar no alto à esquerda: o carro (embaixo, no centro) fica sempre à vista */
+@media (pointer: fine) { .game-card { top: 76px; bottom: auto; } }
+.node-label { transition: opacity 0.4s; }
+
+@media (pointer: fine) { .game-card { grid-template-columns: 110px 1fr; width: min(440px, calc(100vw - 32px)); } .game-card img { width: 110px; min-height: 120px; } .game-card h2 { font-size: 19px; } .game-card .metrics.small dt { font-size: 16px; } }

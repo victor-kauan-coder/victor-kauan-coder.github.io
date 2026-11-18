@@ -5,7 +5,7 @@ import { RigidBody } from '@react-three/rapier';
 import { clone as cloneSkinned } from 'three/examples/jsm/utils/SkeletonUtils.js';
 import * as THREE from 'three';
 import { useModel } from './loaders.js';
-import { MODEL, Model } from './World.jsx';
+import { MODEL, Model, useSolid } from './World.jsx';
 
 // Personagem animado (Kenney Mini Characters / Blocky Characters). Clona o esqueleto para cada cópia.
 export function Character({ name, anim = 'idle', scale = 1, ...props }) {
@@ -16,6 +16,7 @@ export function Character({ name, anim = 'idle', scale = 1, ...props }) {
     return c;
   }, [scene]);
   const group = useRef();
+  useSolid(group, true, 0.5);
   const { actions } = useAnimations(animations, group);
   useEffect(() => {
     const a = actions[anim] || actions.idle;
@@ -34,19 +35,20 @@ export function ScreenOn({ name, src, map, rect = [0.1, 0.1, 0.9, 0.9], z = 1, s
   const w = (box.max.x - box.min.x) * (x1 - x0), h = (box.max.y - box.min.y) * (y1 - y0);
   const cx = box.min.x + (box.max.x - box.min.x) * (x0 + x1) / 2, cy = box.min.y + (box.max.y - box.min.y) * (y0 + y1) / 2;
   const zf = box.min.z + (box.max.z - box.min.z) * z + 0.004;
+  const screen = useRef();
   return (
     <group scale={scale} {...props}>
       <Model name={name} />
-      <mesh position={[cx, cy, zf]}>
+      <mesh ref={screen} position={[cx, cy, zf]}>
         <planeGeometry args={[w, h]} />
-        {map ? <meshBasicMaterial map={map} toneMapped={false} /> : <ShotMat src={src} aspect={w / h} />}
+        {map ? <meshBasicMaterial map={map} toneMapped={false} /> : <ShotMat src={src} aspect={w / h} anchor={screen} />}
       </mesh>
     </group>
   );
 }
 
 // Material com uma captura que troca sozinha (lista) ou fixa (string). Baixa uma imagem por vez.
-export function ShotMat({ src, aspect }) {
+export function ShotMat({ src, aspect, anchor }) {
   const mat = useRef();
   const list = Array.isArray(src) ? src : [src];
   const st = useRef({ i: -1, t: 0, cur: null, busy: false });
@@ -56,7 +58,9 @@ export function ShotMat({ src, aspect }) {
     const s = st.current; if (s.busy || !list[i]) return; s.busy = true;
     loader.load(list[i], (bmp) => {
       const t = new THREE.Texture(bmp); t.flipY = false; t.needsUpdate = true;
-      t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8;
+      // sem mipmaps: gerar mipmap de imagem grande trava a GPU integrada por dezenas de ms
+      t.generateMipmaps = false; t.minFilter = THREE.LinearFilter;
+      t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 1;
       const ia = t.image.width / t.image.height;
       if (ia > aspect) { t.repeat.set(aspect / ia, 1); t.offset.set((1 - aspect / ia) / 2, 0); } else { t.repeat.set(1, ia / aspect); t.offset.set(0, 1 - ia / aspect); }
       if (mat.current) { mat.current.map = t; mat.current.color.set('#fff'); mat.current.needsUpdate = true; }
@@ -64,7 +68,15 @@ export function ShotMat({ src, aspect }) {
     }, undefined, () => { s.busy = false; });
   };
   useEffect(() => { load(0); return () => st.current.cur?.dispose(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
-  useFrame((_, dt) => { const s = st.current; s.t += dt; if (list.length > 1 && s.t > 5) { s.t = 0; load((s.i + 1) % list.length); } });
+  const wp = useMemo(() => new THREE.Vector3(), []);
+  useFrame(({ camera }, dt) => {
+    const s = st.current; s.t += dt;
+    if (list.length < 2 || s.t < 6 || (import.meta.env.DEV && window.__noRotate)) return;
+    s.t = 0;
+    // só troca a tela que está perto da câmera: as outras ficam paradas (sem envio de textura à toa)
+    if (anchor?.current) anchor.current.getWorldPosition(wp);
+    if (!anchor?.current || camera.position.distanceTo(wp) < 60) load((s.i + 1) % list.length);
+  });
   return <meshBasicMaterial ref={mat} color="#0b0d12" toneMapped={false} />;
 }
 
@@ -78,7 +90,7 @@ export function Prop({ name, position, rotation = [0, 0, 0], scale = 1, mass = 1
   });
   return (
     <RigidBody ref={body} colliders="cuboid" position={position} rotation={rotation} mass={mass} linearDamping={0.4} angularDamping={0.6} canSleep>
-      <Model name={name} scale={scale} />
+      <Model name={name} scale={scale} solid={false} />
     </RigidBody>
   );
 }

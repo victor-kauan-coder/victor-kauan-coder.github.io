@@ -88,7 +88,7 @@ export function Grass() {
         vec2 uv = wp / uSize + 0.5;
         vec4 h = texture2D(uHM, uv);
         float fade = 1.0 - smoothstep(uR * 0.7, uR, length(aOff.xy));
-        float s = h.g * fade * (0.8 + aOff.z * 0.9);
+        float s = h.g * fade * (0.45 + aOff.z * 0.45);
         vec3 p = position * s;
         float ang = aOff.w * 6.2831;
         p.xz = mat2(cos(ang), -sin(ang), sin(ang), cos(ang)) * p.xz;

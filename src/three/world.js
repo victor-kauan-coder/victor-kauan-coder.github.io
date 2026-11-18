@@ -18,9 +18,14 @@ const ROAD_W = 7;
 // Amostra a estrada para achatar o terreno perto dela.
 const samples = road.getSpacedPoints(600).map((p) => ({ p, h: rawHeight(p.x, p.z) }));
 const smoothH = samples.map((s, i) => { let a = 0, n = 0; for (let k = -8; k <= 8; k++) { const o = samples[i + k]; if (o) { a += o.h; n++; } } return a / n; });
-function nearestRoad(x, z) {
+export function nearestRoad(x, z) {
   let best = 1e9, bi = 0;
   for (let i = 0; i < samples.length; i += 2) { const d = (samples[i].p.x - x) ** 2 + (samples[i].p.z - z) ** 2; if (d < best) { best = d; bi = i; } }
+  // refina com os vizinhos e mede a distância até o segmento (não só até o ponto)
+  for (const j of [bi - 1, bi + 1]) { const o = samples[j]; if (!o) continue; const d = (o.p.x - x) ** 2 + (o.p.z - z) ** 2; if (d < best) { best = d; bi = j; } }
+  const a = samples[bi].p, b2 = samples[Math.min(bi + 1, samples.length - 1)].p;
+  const vx = b2.x - a.x, vz = b2.z - a.z, L = vx * vx + vz * vz;
+  if (L > 0) { const t = Math.max(0, Math.min(1, ((x - a.x) * vx + (z - a.z) * vz) / L)); best = Math.min(best, (a.x + vx * t - x) ** 2 + (a.z + vz * t - z) ** 2); }
   return { d: Math.sqrt(best), i: bi };
 }
 // Platôs das paradas: cada lugar fica num terreno plano.
@@ -45,10 +50,20 @@ export function height(x, z) {
   const rh = smoothH[i] - 0.45;
   return THREE.MathUtils.lerp(rh, h, THREE.MathUtils.smoothstep(d, ROAD_W * 0.75, ROAD_W * 2.4));
 }
+// índice da estrada em frente a cada lugar (para o piloto automático seguir a estrada)
 // altura de cada platô = altura da estrada ali
-stops.forEach((s) => { const { i } = nearestRoad(s.road.x, s.road.z); s.h = smoothH[i] - 0.1; s.c.y = s.h; s.road.y = s.h; });
+stops.forEach((s) => { const { i } = nearestRoad(s.road.x, s.road.z); s.ri = i; s.h = smoothH[i] - 0.1; s.c.y = s.h; s.road.y = s.h; });
 samples.forEach((s, i) => { s.p.y = smoothH[i]; });
 export const roadPoints = samples.map((s) => s.p);
+
+// Altura da superfície onde algo apoia: em cima do asfalto (que fica acima do chão) ou no chão.
+export const ROAD_TOP = 0.12;
+export function surface(x, z) {
+  const { d, i } = nearestRoad(x, z);
+  const g = height(x, z);
+  if (d < 4.1) return Math.max(g, smoothH[i] + ROAD_TOP);
+  return g;
+}
 export const roadHeights = smoothH;
 
 // Gerador pseudoaleatório com semente, para o mundo sair igual em toda visita.
@@ -61,21 +76,27 @@ export function isFree(x, z, margin = 6) {
   return !stops.some((s) => Math.hypot(x - s.c.x, z - s.c.z) < 24);
 }
 
-// Obstáculos estáticos para o carro (casas, árvores, pedras, móveis dos lugares): círculos numa grade espacial.
+// Obstáculos para o carro: círculos numa grade espacial (casas, árvores, pedras e cada modelo dos lugares,
+// registrados pela caixa envolvente real) + obstáculos que se movem (os carros do trânsito).
 const OB_CELL = 24;
 const grid = new Map();
+const key = (x, z) => `${Math.floor(x / OB_CELL)},${Math.floor(z / OB_CELL)}`;
 export function addObstacle(x, z, r) {
-  const k = `${Math.floor(x / OB_CELL)},${Math.floor(z / OB_CELL)}`;
-  if (!grid.has(k)) grid.set(k, []);
-  grid.get(k).push({ x, z, r });
+  const o = { x, z, r, k: key(x, z) };
+  if (!grid.has(o.k)) grid.set(o.k, []);
+  grid.get(o.k).push(o);
+  return o;
 }
+export function removeObstacle(o) {
+  const l = grid.get(o.k); if (!l) return;
+  const i = l.indexOf(o); if (i >= 0) l.splice(i, 1);
+}
+export const movers = new Set();
+const near = [];
 export function nearObstacles(x, z) {
-  const cx = Math.floor(x / OB_CELL), cz = Math.floor(z / OB_CELL), out = [];
-  for (let i = -1; i <= 1; i++) for (let j = -1; j <= 1; j++) { const l = grid.get(`${cx + i},${cz + j}`); if (l) out.push(...l); }
-  return out;
+  near.length = 0;
+  const cx = Math.floor(x / OB_CELL), cz = Math.floor(z / OB_CELL);
+  for (let i = -1; i <= 1; i++) for (let j = -1; j <= 1; j++) { const l = grid.get(`${cx + i},${cz + j}`); if (l) for (const o of l) near.push(o); }
+  for (const m of movers) if (Math.abs(m.x - x) < 30 && Math.abs(m.z - z) < 30) near.push(m);
+  return near;
 }
-// a área de móveis de cada lugar (atrás, longe da estrada) é sólida; a frente fica livre para os objetos com física
-stops.forEach((s) => {
-  const back = s.c.clone().addScaledVector(s.n, 3);
-  addObstacle(back.x, back.z, 5.2);
-});

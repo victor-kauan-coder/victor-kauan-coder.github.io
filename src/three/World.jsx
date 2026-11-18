@@ -1,7 +1,7 @@
-import { Suspense, useEffect, useMemo, useRef } from 'react';
+import { createContext, Suspense, useContext, useEffect, useMemo, useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
-import { SIZE, height, roadPoints, stops, rng, isFree, road, addObstacle } from './world.js';
+import { SIZE, height, surface, roadPoints, stops, rng, isFree, road, addObstacle, removeObstacle, movers } from './world.js';
 import { tex } from '../data/projects.js';
 import { ui } from '../store.js';
 import { useModel } from './loaders.js';
@@ -10,14 +10,36 @@ import { Terrain, Grass } from './Ground.jsx';
 // Modelos low-poly da Kenney (kenney.nl, CC0). Cada um tem poucas centenas de triângulos.
 export const MODEL = (n) => tex(`k/${n}.glb`);
 
-export function Model({ name, shadow = true, ...props }) {
+// Dentro de um lugar, todo modelo vira obstáculo sólido para o carro (pela caixa envolvente real).
+export const SolidCtx = createContext(false);
+const _box = new THREE.Box3(), _size = new THREE.Vector3(), _c = new THREE.Vector3();
+export function useSolid(ref, on, shrink = 0.85) {
+  const done = useRef(null);
+  useFrame(() => {
+    if (!on || done.current || !ref.current) return;
+    ref.current.updateWorldMatrix(true, true);
+    _box.setFromObject(ref.current);
+    if (_box.isEmpty()) return;
+    _box.getSize(_size); _box.getCenter(_c);
+    // objetos no alto (cordão de luzes, bandeiras) e no chão (tapete) não bloqueiam o carro
+    const ground = height(_c.x, _c.z);
+    if (_box.min.y - ground > 1.2 || _size.y < 0.15) { done.current = true; return; }
+    done.current = addObstacle(_c.x, _c.z, Math.max(0.35, Math.max(_size.x, _size.z) * 0.5 * shrink));
+  });
+  useEffect(() => () => { if (done.current && done.current !== true) removeObstacle(done.current); }, []);
+}
+
+export function Model({ name, shadow = true, solid, ...props }) {
   const { scene } = useModel(MODEL(name));
+  const ctx = useContext(SolidCtx);
+  const ref = useRef();
+  useSolid(ref, solid ?? ctx);
   const obj = useMemo(() => {
     const c = scene.clone(true);
     c.traverse((o) => { if (o.isMesh) { o.castShadow = shadow; o.receiveShadow = true; } });
     return c;
   }, [scene, shadow]);
-  return <primitive object={obj} {...props} />;
+  return <primitive ref={ref} object={obj} {...props} />;
 }
 
 // Instancia as malhas de um modelo em N posições (uma chamada de desenho por malha).
@@ -84,10 +106,24 @@ function Road() {
       g.setIndex(idx); g.computeVertexNormals();
       return g;
     };
-    return { road: strip(-3.8, 3.8, 0.12, false), l: strip(-3.6, -3.35, 0.14, false), r: strip(3.35, 3.6, 0.14, false), mid: strip(-0.1, 0.1, 0.14, true) };
+    // saia lateral: fecha o vão entre a borda do asfalto e o chão (sem estrada "flutuando")
+    const skirt = (w) => {
+      const pos = [], idx = [];
+      roadPoints.forEach((p, i) => {
+        const nxt = roadPoints[Math.min(i + 1, roadPoints.length - 1)], prv = roadPoints[Math.max(i - 1, 0)];
+        const t = new THREE.Vector3().subVectors(nxt, prv).setY(0).normalize();
+        const x = p.x - t.z * w, z = p.z + t.x * w;
+        pos.push(x, p.y + 0.12, z, x, p.y - 0.9, z);
+        if (i < roadPoints.length - 1) { const a = i * 2; idx.push(a, a + 1, a + 2, a + 1, a + 3, a + 2); }
+      });
+      const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setIndex(idx); g.computeVertexNormals(); return g;
+    };
+    return { skirtL: skirt(-3.8), skirtR: skirt(3.8), road: strip(-3.8, 3.8, 0.12, false), l: strip(-3.6, -3.35, 0.14, false), r: strip(3.35, 3.6, 0.14, false), mid: strip(-0.1, 0.1, 0.14, true) };
   }, []);
   return (
     <group>
+      <mesh geometry={geos.skirtL}><meshStandardMaterial color="#3a3d47" side={THREE.DoubleSide} /></mesh>
+      <mesh geometry={geos.skirtR}><meshStandardMaterial color="#3a3d47" side={THREE.DoubleSide} /></mesh>
       <mesh geometry={geos.road} receiveShadow><meshStandardMaterial color="#4b4f5c" roughness={0.9} side={THREE.DoubleSide} polygonOffset polygonOffsetFactor={-2} polygonOffsetUnits={-2} /></mesh>
       <mesh geometry={geos.l}><meshStandardMaterial color="#f4f4f4" side={THREE.DoubleSide} polygonOffset polygonOffsetFactor={-4} polygonOffsetUnits={-4} /></mesh>
       <mesh geometry={geos.r}><meshStandardMaterial color="#f4f4f4" side={THREE.DoubleSide} polygonOffset polygonOffsetFactor={-4} polygonOffsetUnits={-4} /></mesh>
@@ -165,6 +201,8 @@ export function Nature() {
 // ---------- Trânsito: carrinhos indo e vindo pela estrada ----------
 function Car({ name, speed, offset, lane }) {
   const ref = useRef();
+  const me = useMemo(() => ({ x: 0, z: 0, r: 1.7, moving: true }), []);
+  useEffect(() => { movers.add(me); return () => movers.delete(me); }, [me]);
   const p = useMemo(() => new THREE.Vector3(), []), a = useMemo(() => new THREE.Vector3(), []);
   useFrame(({ clock }) => {
     let t = (offset + clock.elapsedTime * speed) % 1; if (lane < 0) t = 1 - t;
@@ -172,11 +210,12 @@ function Car({ name, speed, offset, lane }) {
     const dir = a.clone().sub(p).setY(0).normalize();
     const n = new THREE.Vector3(-dir.z, 0, dir.x);
     p.addScaledVector(n, -1.8);
-    p.y = height(p.x, p.z) + 0.12;
+    p.y = surface(p.x, p.z);
     ref.current.position.copy(p);
     ref.current.rotation.y = Math.atan2(dir.x, dir.z);
+    me.x = p.x; me.z = p.z;
   });
-  return <group ref={ref}><Model name={name} /></group>;
+  return <group ref={ref}><Model name={name} solid={false} /></group>;
 }
 export function Traffic() {
   const cars = [['taxi', 0.006, 0.1, 1], ['sedan', 0.005, 0.45, -1], ['delivery', 0.004, 0.7, 1], ['police', 0.0065, 0.25, -1], ['van', 0.0045, 0.9, -1], ['tractor', 0.003, 0.55, 1]];

@@ -12,7 +12,7 @@ export function useTermoDashboard() {
     const c = document.createElement('canvas'); c.width = 1024; c.height = 640;
     const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace;
     const draw = (s) => {
-      const g = c.getContext('2d'); const bad = s.alert;
+      const g = c.getContext('2d', { willReadFrequently: true }); const bad = s.alert;
       g.fillStyle = '#0e1015'; g.fillRect(0, 0, 1024, 640);
       g.fillStyle = bad ? '#4a1810' : '#12161d'; g.fillRect(0, 0, 1024, 76);
       g.fillStyle = bad ? '#ffb39c' : '#8b95a7'; g.font = '700 30px Manrope, sans-serif';
@@ -41,27 +41,29 @@ export function useTermoDashboard() {
 }
 
 // Letreiro de LED (o LED Clock): mostra a hora ou rola o recado digitado no site.
+// O fundo de pontos é desenhado uma vez só; a cada quadro do letreiro (15 por segundo) só o texto muda.
 export function useLedSign() {
   const t = useMemo(() => {
-    const c = document.createElement('canvas'); c.width = 1024; c.height = 256;
-    const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace;
-    return { c, tex, x: 1024, acc: 0 };
+    const W = 512, H = 128;
+    const bg = document.createElement('canvas'); bg.width = W; bg.height = H;
+    const b = bg.getContext('2d', { willReadFrequently: true }); b.fillStyle = '#120404'; b.fillRect(0, 0, W, H); b.fillStyle = '#2a0b08';
+    for (let y = 8; y < H; y += 16) for (let x = 8; x < W; x += 16) { b.beginPath(); b.arc(x, y, 5.5, 0, 7); b.fill(); }
+    const c = document.createElement('canvas'); c.width = W; c.height = H;
+    const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace; tex.generateMipmaps = false; tex.minFilter = THREE.LinearFilter;
+    return { c, bg, tex, x: W, acc: 0, W, H, last: '' };
   }, []);
   useFrame((_, dt) => {
-    // redesenha a ~15 quadros por segundo: o letreiro não precisa de 60
-    t.acc += dt; if (t.acc < 1 / 15) return; dt = t.acc; t.acc = 0;
-    const g = t.c.getContext('2d');
-    g.fillStyle = '#120404'; g.fillRect(0, 0, 1024, 256);
-    // grade de pontos apagados, como a matriz MAX7219
-    g.fillStyle = '#2a0b08';
-    for (let y = 16; y < 256; y += 32) for (let x = 16; x < 1024; x += 32) { g.beginPath(); g.arc(x, y, 11, 0, 7); g.fill(); }
-    const msg = led.get().msg;
-    const d = new Date();
+    t.acc += dt; if (t.acc < 1 / 15) return; const step = t.acc; t.acc = 0;
+    const msg = led.get().msg, d = new Date();
     const text = msg || `${String(d.getHours()).padStart(2, '0')}${d.getSeconds() % 2 ? ':' : ' '}${String(d.getMinutes()).padStart(2, '0')}`;
-    g.font = '900 190px "JetBrains Mono", monospace'; g.fillStyle = '#ff3b2f'; g.shadowColor = '#ff3b2f'; g.shadowBlur = 30; g.textBaseline = 'middle';
-    if (msg) { t.x -= dt * 260; const w = g.measureText(text).width; if (t.x < -w) t.x = 1024; g.fillText(text, t.x, 136); }
-    else { const w = g.measureText(text).width; g.fillText(text, (1024 - w) / 2, 136); }
-    g.shadowBlur = 0; t.tex.needsUpdate = true;
+    if (!msg && text === t.last) return; // a hora parada não precisa redesenhar
+    t.last = text;
+    const g = t.c.getContext('2d', { willReadFrequently: true });
+    g.drawImage(t.bg, 0, 0);
+    g.font = '900 96px "JetBrains Mono", monospace'; g.fillStyle = '#ff3b2f'; g.textBaseline = 'middle';
+    const w = g.measureText(text).width;
+    if (msg) { t.x -= step * 130; if (t.x < -w) t.x = t.W; g.fillText(text, t.x, 68); } else g.fillText(text, (t.W - w) / 2, 68);
+    t.tex.needsUpdate = true;
   });
   return t.tex;
 }
