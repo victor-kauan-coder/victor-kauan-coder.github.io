@@ -43,7 +43,7 @@ h1, h2, h3 { font-family: var(--display); font-weight: 700; letter-spacing: -0.0
 
 /* ---------- Conteúdo sobre a cena ---------- */
 .content { position: relative; z-index: 2; pointer-events: none; transition: opacity 0.5s var(--ease); }
-html.game .content { opacity: 0; }
+html.game .content { opacity: 0; visibility: hidden; transition: opacity 0.5s, visibility 0s 0.5s; }
 .content a, .content button, .content input, .content .panel { pointer-events: auto; }
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 46px; padding: 0 20px; border-radius: 999px; border: 1px solid var(--line); background: rgba(16, 19, 31, 0.92); color: var(--text); font: 700 15px var(--body); text-decoration: none; cursor: pointer; transition: transform 0.25s var(--ease), background 0.2s, border-color 0.2s; }
 .btn:hover { transform: translateY(-2px); border-color: rgba(255, 255, 255, 0.25); }
@@ -321,3 +321,6 @@ kbd { font: 600 11.5px var(--mono); color: var(--text); background: #1a1f2e; bor
 .node-label { transition: opacity 0.4s; }
 
 @media (pointer: fine) { .game-card { grid-template-columns: 110px 1fr; width: min(440px, calc(100vw - 32px)); } .game-card img { width: 110px; min-height: 120px; } .game-card h2 { font-size: 19px; } .game-card .metrics.small dt { font-size: 16px; } }
+
+.chip-btn.icon { width: 38px; padding: 0; justify-content: center; }
+@media (max-width: 760px) { .chip-btn.icon { display: inline-flex; } }

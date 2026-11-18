@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { ExternalLink, Lock, Play, Pause, Send, Thermometer, Snowflake, Sun, Car } from 'lucide-react';
 import { stations } from '../data/projects.js';
+import { Signature } from './Signature.jsx';
 import { ui, useStore, led, sling, unlock } from '../store.js';
 import { termo, fmtC } from '../termo.js';
 import { audio, toggleAudio } from '../audio.js';
@@ -82,6 +83,7 @@ export function ProjectSection({ s }) {
   return (
     <section className={`project p-${s.id}`} id={s.id} data-stop style={{ '--c': s.color }}>
       <div className="panel">
+        <div className="panel-sig"><Signature id={s.id} /></div>
         <p className="team">{s.team}</p>
         <h2>{s.name}</h2>
         <p className="tagline">{s.tagline}</p>

@@ -6,7 +6,7 @@ import * as THREE from 'three';
 import { stations } from '../data/projects.js';
 import { scroll, ui, useStore, unlock } from '../store.js';
 import { World, Atmosphere, MODEL, Model } from './World.jsx';
-import { stops, road, height, surface, nearObstacles, nearestRoad, roadPoints } from './world.js';
+import { stops, road, height, surface, nearObstacles, nearestRoad, roadPoints, sky } from './world.js';
 import { PLACES, SolidPlace } from './Places.jsx';
 import { initLoaders, useModel } from './loaders.js';
 
@@ -53,10 +53,10 @@ function stopPose(st, narrow) {
   return { p, t };
 }
 function poses(narrow) {
-  const list = [{ p: new THREE.Vector3(-250, 95, 330), t: new THREE.Vector3(-150, 0, 120) }];
+  const list = [{ p: new THREE.Vector3(-560, 120, 560), t: new THREE.Vector3(-380, 0, 260) }];
   stops.forEach((st) => list.push(stopPose(st, narrow)));
-  list.push({ p: new THREE.Vector3(420, 160, -260), t: new THREE.Vector3(60, 0, 40) });
-  list.push({ p: new THREE.Vector3(0, 320, 10), t: new THREE.Vector3(0, 0, 0) });
+  list.push({ p: new THREE.Vector3(680, 220, -420), t: new THREE.Vector3(100, 0, 60) });
+  list.push({ p: new THREE.Vector3(0, 560, 20), t: new THREE.Vector3(0, 0, 0) });
   return list;
 }
 function travelPose(t0, t1, e) {
@@ -69,7 +69,7 @@ function Rig() {
   const { camera, size } = useThree();
   const narrow = size.width / size.height < 0.95;
   const list = useMemo(() => poses(narrow), [narrow]);
-  const look = useRef(new THREE.Vector3(-150, 0, 120));
+  const look = useRef(new THREE.Vector3(-380, 0, 260));
   const p = useMemo(() => new THREE.Vector3(), []), t = useMemo(() => new THREE.Vector3(), []), focus = useMemo(() => new THREE.Vector3(), []);
   useFrame((_, dt) => {
     const f = THREE.MathUtils.clamp(scroll.focus, 0, list.length - 1);
@@ -104,7 +104,7 @@ function Car() {
   }, [scene]);
   useEffect(() => {
     const k = st.current.keys;
-    const dn = (e) => { if (e.target.tagName === 'INPUT') return; k[e.key.toLowerCase()] = true; if (e.key === 'Shift') k.shift = true; if (e.key.startsWith('Arrow') || e.key === ' ') e.preventDefault(); };
+    const dn = (e) => { if (e.target.tagName === 'INPUT') return; if (e.key.toLowerCase() === 'n' && !e.repeat) ui.set({ night: !ui.get().night }); k[e.key.toLowerCase()] = true; if (e.key === 'Shift') k.shift = true; if (e.key.startsWith('Arrow') || e.key === ' ') e.preventDefault(); };
     const upk = (e) => { k[e.key.toLowerCase()] = false; if (e.key === 'Shift') k.shift = false; };
     window.addEventListener('keydown', dn); window.addEventListener('keyup', upk);
     const s0 = stops[0], s = st.current;
@@ -124,9 +124,14 @@ function Car() {
     let throttle = (k.w || k.arrowup ? 1 : 0) - (k.s || k.arrowdown ? 1 : 0) - touch.y;
     // teletransporte: coloca o carro na estrada, de frente para o lugar
     const tp = ui.get().teleport;
-    if (tp != null) {
+    if (tp != null && typeof tp === 'object') {
+      // ponto qualquer {x, z, h} (usado nos testes e para levar a vila, acampamento e fazenda)
+      ui.set({ teleport: null, target: null });
+      s.pos.set(tp.x, 0, tp.z); s.speed = 0; s.ready = false; s.heading = tp.h || 0;
+      camera.position.set(tp.x - Math.sin(s.heading) * 9, height(tp.x, tp.z) + 5, tp.z - Math.cos(s.heading) * 9);
+    } else if (tp != null) {
       const st = stops[tp]; ui.set({ teleport: null, target: null });
-      s.pos.copy(st.road).addScaledVector(st.n, 3.5); s.speed = 0;
+      s.pos.copy(st.road).addScaledVector(st.n, 3.5); s.speed = 0; s.ready = false;
       s.heading = Math.atan2(st.n.x, st.n.z);
       camera.position.copy(s.pos).addScaledVector(st.n, -9).add(new THREE.Vector3(0, 4, 0));
     }
@@ -169,9 +174,9 @@ function Car() {
         s.speed *= 1 - hit * 0.9;
       }
     }
-    const lim = 410; s.pos.x = THREE.MathUtils.clamp(s.pos.x, -lim, lim); s.pos.z = THREE.MathUtils.clamp(s.pos.z, -lim, lim);
+    const lim = 640; s.pos.x = THREE.MathUtils.clamp(s.pos.x, -lim, lim); s.pos.z = THREE.MathUtils.clamp(s.pos.z, -lim, lim);
     const g = surface(s.pos.x, s.pos.z), ahead = surface(s.pos.x + fwd.x * 1.5, s.pos.z + fwd.z * 1.5);
-    s.pos.y = g;
+    s.pos.y = s.ready ? THREE.MathUtils.damp(s.pos.y, g, 18, dt) : g; s.ready = true;
     eul.set(-Math.atan2(ahead - g, 1.5), s.heading, -steer * 0.04 * THREE.MathUtils.clamp(s.speed / 10, -1, 1));
     q.setFromEuler(eul);
     if (body.current) { body.current.setNextKinematicTranslation(s.pos); body.current.setNextKinematicRotation(q); }
@@ -194,8 +199,8 @@ function Car() {
     const fov = 45 + Math.max(0, s.speed - 8) * 0.45;
     if (Math.abs(camera.fov - fov) > 0.05) { camera.fov = THREE.MathUtils.damp(camera.fov, fov, 4, dt); camera.updateProjectionMatrix(); }
     ui.get().focusPoint = s.pos;
-    ui.get().car = { x: s.pos.x, z: s.pos.z, heading: s.heading, speed: s.speed, boost };
-    if (import.meta.env.DEV && !window.__inside) window.__inside = () => { const c = ui.get().car; const hit = nearObstacles(c.x, c.z).filter((o) => Math.hypot(c.x - o.x, c.z - o.z) < o.r + 0.6).map((o) => `r${o.r.toFixed(1)}@${Math.hypot(c.x - o.x, c.z - o.z).toFixed(2)}`); return hit.length ? `DENTRO ${hit.join(' ')}` : 'ok'; };
+    ui.get().car = { x: s.pos.x, y: s.pos.y, z: s.pos.z, pitch: eul.x, heading: s.heading, speed: s.speed, boost };
+    if ((import.meta.env.DEV || location.search.includes('teste')) && !window.__inside) window.__inside = () => { const c = ui.get().car; const hit = nearObstacles(c.x, c.z).filter((o) => Math.hypot(c.x - o.x, c.z - o.z) < o.r + 0.6).map((o) => `r${o.r.toFixed(1)}@${Math.hypot(c.x - o.x, c.z - o.z).toFixed(2)}`); return hit.length ? `DENTRO ${hit.join(' ')}` : 'ok'; };
     // lugares por perto: monta o que está a menos de 70 m; mostra o cartão a menos de 18 m
     let near = null; const around = [];
     stops.forEach((p, i) => { const d = Math.hypot(p.c.x - s.pos.x, p.c.z - s.pos.z); if (d < 70) around.push(i); if (d < 18) near = i; });
@@ -203,15 +208,36 @@ function Car() {
     if (near !== cur.near) { ui.set({ near }); if (near != null) unlock(`visit:${stations[near].id}`); }
     if (around.join() !== (cur.around || []).join()) ui.set({ around });
   });
+  // faróis: um spot que só acende à noite (intensidade 0 de dia; o número de luzes não muda)
+  const head = useRef(), headT = useRef();
+  useFrame(() => { if (head.current) { head.current.intensity = sky.k * 90; head.current.visible = sky.k > 0.02; head.current.target = headT.current; } });
   return (
     <RigidBody ref={body} type="kinematicPosition" colliders={false}>
       <CuboidCollider args={[0.75, 0.5, 1.45]} position={[0, 0.55, 0]} />
       <primitive ref={vis} object={scene} />
+      <spotLight ref={head} position={[0, 1, 1.4]} angle={0.55} penumbra={0.6} distance={45} decay={1.4} color="#fff2d6" intensity={0} />
+      <object3D ref={headT} position={[0, 0, 12]} />
     </RigidBody>
   );
 }
 
 // ---------- Lugares: cada um monta (e baixa seus modelos) só quando está perto ----------
+const placeRefs = [];
+// Sombra em quadros alternados: metade do custo, diferença imperceptível.
+function ShadowThrottle() {
+  const { gl } = useThree();
+  const n = useRef(0);
+  useEffect(() => { gl.shadowMap.autoUpdate = false; return () => { gl.shadowMap.autoUpdate = true; }; }, [gl]);
+  useFrame(() => { n.current++; if (n.current % 2 === 0) gl.shadowMap.needsUpdate = true; });
+  return null;
+}
+// Esconde os lugares a mais de 230 m da câmera: menos objetos para o three percorrer e desenhar.
+function PlaceCulling() {
+  useFrame(({ camera }) => {
+    placeRefs.forEach((g, i) => { if (!g) return; const c = stops[i].c; g.visible = Math.hypot(camera.position.x - c.x, camera.position.z - c.z) < 230; });
+  });
+  return null;
+}
 function Places() {
   const active = useStore(ui, (s) => s.active);
   const mode = useStore(ui, (s) => s.mode);
@@ -223,7 +249,7 @@ function Places() {
       <group key={s.id}>
         <Beacon i={i} show={mode === 'game' || active === 0 || active > stations.length} />
         {show && (
-          <group position={st.c} rotation-y={st.rotY}>
+          <group position={st.c} rotation-y={st.rotY} ref={(r) => (placeRefs[i] = r)}>
             <RigidBody type="fixed" colliders={false}><CuboidCollider args={[22, 0.2, 22]} position={[0, -0.2, 4]} /></RigidBody>
             <Suspense fallback={null}><SolidPlace><P /></SolidPlace></Suspense>
           </group>
@@ -236,22 +262,24 @@ function Places() {
 export default function Scene() {
   const lowPower = ui.get().lowPower;
   const mode = useStore(ui, (s) => s.mode);
-  const [dpr, setDpr] = useState(lowPower ? 1 : 1.5);
+  const [dpr, setDpr] = useState(1); // começa em 1x; sobe para 1,25x só se sobrar desempenho
   return (
     <Canvas
       className="stage"
       dpr={dpr}
-      shadows={lowPower ? false : 'soft'}
-      camera={{ fov: 45, near: 0.1, far: 2400, position: [-250, 95, 330] }}
+      shadows={lowPower ? false : 'percentage'}
+      camera={{ fov: 45, near: 0.3, far: 1400, position: [-560, 120, 560] }}
       gl={{ antialias: true, powerPreference: 'high-performance', alpha: false }}
       onCreated={({ gl }) => { initLoaders(gl); FAR.forEach((n) => useModel.preload(MODEL(n))); gl.toneMapping = THREE.ACESFilmicToneMapping; gl.toneMappingExposure = 1.05; }}
     >
-      <PerformanceMonitor onDecline={() => setDpr(1)} onIncline={() => !lowPower && setDpr(1.5)} />
+      <PerformanceMonitor bounds={() => [52, 60]} onDecline={() => setDpr(0.85)} onIncline={() => !lowPower && setDpr(1.25)} />
       <Suspense fallback={null}><Atmosphere /></Suspense>
       <Suspense fallback={null}><World /></Suspense>
       <Suspense fallback={null}>
         <Physics gravity={[0, -12, 0]} timeStep={1 / 60}>
           <Places />
+          <PlaceCulling />
+          <ShadowThrottle />
           {mode === 'game' && <Suspense fallback={null}><Car /></Suspense>}
         </Physics>
         {/* compila todos os shaders e envia as texturas antes de mostrar: nada de travada na primeira vez que algo aparece */}

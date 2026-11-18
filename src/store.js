@@ -24,6 +24,7 @@ const lowPower = typeof navigator !== 'undefined' && ((navigator.hardwareConcurr
 
 export const ui = createStore({
   mode: 'film', // 'film' | 'game'
+  night: false,
   active: 0, // seção ativa (0 = abertura)
   quick: false,
   lightbox: null,
@@ -67,4 +68,4 @@ export function unlock(id) {
 }
 
 // só em desenvolvimento: acesso pelo console para testar
-if (import.meta.env.DEV) window.__ui = ui;
+if (import.meta.env.DEV || location.search.includes('teste')) window.__ui = ui; // ?teste: ganchos para os testes automáticos

@@ -43,7 +43,6 @@ function useLabel(text, sub, color) {
 function Common({ id, sub, board = [3.8, 0, -5.6], boardRot = -0.3, props = true }) {
   const s = S[id];
   const label = useLabel(s.name, sub || s.place, s.color);
-  const lights = useMemo(() => Array.from({ length: 15 }, (_, i) => -7 + i), []);
   return (
     <>
       <Model name="rugRectangle" scale={[8, 1, 7]} position={[0, 0.06, -1.4]} shadow={false} solid={false} />
@@ -51,7 +50,6 @@ function Common({ id, sub, board = [3.8, 0, -5.6], boardRot = -0.3, props = true
       <ScreenOn name="signpost" map={label} rect={R.signpost} scale={5} position={[6.4, 0, 2.6]} rotation-y={-0.8} />
       <Model name="bannerTowerRed" scale={3.4} position={[-7.6, 0, -6.6]} />
       <Model name="bannerTowerGreen" scale={3.4} position={[7.6, 0, -6.6]} />
-      {lights.map((x) => <Model key={x} name="lights-colored" scale={[1, 1.6, 1.6]} position={[x, 3.6 + Math.cos((x / 7) * 1.4) * 0.5 - 0.4, -6.6]} shadow={false} />)}
       {props && <>
         <Prop name="present-a-cube" scale={1.6} position={[-4.5, 1, 4.2]} />
         <Prop name="present-b-round" scale={1.6} position={[-3.6, 1, 5]} rotation={[0, 0.5, 0]} />

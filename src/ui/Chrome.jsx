@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { useProgress } from '@react-three/drei';
-import { X, List, Trophy, Gamepad2, Film, ArrowRight, ChevronUp, ChevronLeft, ChevronRight } from 'lucide-react';
+import { X, List, Trophy, Gamepad2, Film, ArrowRight, ChevronUp, ChevronLeft, ChevronRight, Moon, Sun } from 'lucide-react';
 import { stations, archive } from '../data/projects.js';
-import { roadPoints, stops } from '../three/world.js';
+import { Signature } from './Signature.jsx';
+import { roadPoints, stops, SIZE } from '../three/world.js';
 import { ExternalLink, Lock } from 'lucide-react';
 import { ui, useStore, achievements, ACH, unlock } from '../store.js';
 
@@ -12,6 +13,7 @@ export function Hud() {
   const mode = useStore(ui, (s) => s.mode);
   const active = useStore(ui, (s) => s.active);
   const got = useStore(achievements, (s) => s.got.length);
+  const night = useStore(ui, (s) => s.night);
   const current = stations[active - 1];
   return (
     <header className="hud">
@@ -21,6 +23,7 @@ export function Hud() {
       </nav>
       <div className="hud-actions">
         <span className="ach" title="Conquistas desbloqueadas"><Trophy size={16} /> {got}/{total}</span>
+        <button className="chip-btn icon" onClick={() => ui.set({ night: !ui.get().night })} aria-label={night ? 'Mudar para dia' : 'Mudar para noite'} title="Dia ou noite (tecla N)">{night ? <Sun size={16} /> : <Moon size={16} />}</button>
         <button className="chip-btn" onClick={() => { const game = ui.get().mode !== 'game'; ui.set({ mode: game ? 'game' : 'film', near: null, target: null }); if (game) unlock('piloto'); }}>
           {mode === 'game' ? <><Film size={16} /> Voltar ao filme</> : <><Gamepad2 size={16} /> Modo jogo</>}
         </button>
@@ -103,20 +106,23 @@ export function GameOverlay() {
   return (
     <>
       {s && (
-        <aside className="game-card" style={{ '--c': s.color }}>
-          {s.shots[0] && <img src={s.shots[0].thumb} alt="" />}
-          <div>
-            <p className="team">{s.place}</p>
+        <aside key={s.id} className={`game-card gc-${s.id}`} style={{ '--c': s.color }} aria-live="polite">
+          <div className="gc-sig"><Signature id={s.id} /></div>
+          <div className="gc-body">
+            <p className="gc-place">{s.place}</p>
             <h2>{s.name}</h2>
-            <p>{s.tagline}</p>
-            <dl className="metrics small">{s.metrics.slice(0, 2).map(([v, l]) => <div key={l}><dt>{v}</dt><dd>{l}</dd></div>)}</dl>
-            <button className="btn primary" onClick={() => ui.set({ dossier: s.id })}>Abrir estudo de caso</button>
+            <p className="gc-tag">{s.tagline}</p>
+            <dl className="gc-metrics">{s.metrics.slice(0, 2).map(([v, l]) => <div key={l}><dt>{v}</dt><dd>{l}</dd></div>)}</dl>
+            <div className="gc-actions">
+              <button className="btn primary" onClick={() => ui.set({ dossier: s.id })}>Estudo de caso</button>
+              {s.shots.length > 0 && <button className="btn ghost" onClick={() => ui.set({ lightbox: { list: s.shots, i: 0 } })}>{s.shots.length} telas</button>}
+            </div>
           </div>
         </aside>
       )}
       <Speedo />
       <MiniMap />
-      <p className="keys"><kbd>W A S D</kbd> dirigir · <kbd>Shift</kbd> turbo · <kbd>Espaço</kbd> freio · <kbd>R</kbd> volta à estrada</p>
+      <p className="keys"><kbd>W A S D</kbd> dirigir · <kbd>Shift</kbd> turbo · <kbd>Espaço</kbd> freio · <kbd>R</kbd> volta à estrada · <kbd>N</kbd> noite</p>
       <div className="pad">
         <button onPointerDown={() => stick(0, -1)} onPointerUp={() => stick(0, 0)} onPointerLeave={() => stick(0, 0)} aria-label="Acelerar"><ChevronUp /></button>
         <div>
@@ -208,7 +214,7 @@ function MiniMap() {
   const ref = useRef();
   useEffect(() => {
     const cv = ref.current, g = cv.getContext('2d');
-    const W = cv.width, k = W / 900, P = (x, z) => [W / 2 + x * k, W / 2 + z * k];
+    const W = cv.width, k = W / (SIZE * 0.85), P = (x, z) => [W / 2 + x * k, W / 2 + z * k];
     let raf, last = 0;
     const draw = (t) => {
       raf = requestAnimationFrame(draw);

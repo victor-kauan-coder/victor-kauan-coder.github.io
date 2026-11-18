@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useRef } from 'react';
-import { useFrame } from '@react-three/fiber';
+import { useFrame, useThree } from '@react-three/fiber';
 import { useAnimations } from '@react-three/drei';
 import { RigidBody } from '@react-three/rapier';
 import { clone as cloneSkinned } from 'three/examples/jsm/utils/SkeletonUtils.js';
 import * as THREE from 'three';
+import { ui } from '../store.js';
 import { useModel } from './loaders.js';
 import { MODEL, Model, useSolid } from './World.jsx';
 
@@ -50,6 +51,7 @@ export function ScreenOn({ name, src, map, rect = [0.1, 0.1, 0.9, 0.9], z = 1, s
 // Material com uma captura que troca sozinha (lista) ou fixa (string). Baixa uma imagem por vez.
 export function ShotMat({ src, aspect, anchor }) {
   const mat = useRef();
+  const gl = useThree((st) => st.gl);
   const list = Array.isArray(src) ? src : [src];
   const st = useRef({ i: -1, t: 0, cur: null, busy: false });
   // decodifica a imagem fora da thread principal (ImageBitmap): trocar a tela não trava o jogo
@@ -63,6 +65,8 @@ export function ShotMat({ src, aspect, anchor }) {
       t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 1;
       const ia = t.image.width / t.image.height;
       if (ia > aspect) { t.repeat.set(aspect / ia, 1); t.offset.set((1 - aspect / ia) / 2, 0); } else { t.repeat.set(1, ia / aspect); t.offset.set(0, 1 - ia / aspect); }
+      // envia para a GPU já (com o carro longe), e não no quadro em que a tela aparece
+      gl.initTexture(t);
       if (mat.current) { mat.current.map = t; mat.current.color.set('#fff'); mat.current.needsUpdate = true; }
       s.cur?.image?.close?.(); s.cur?.dispose(); s.cur = t; s.i = i; s.busy = false;
     }, undefined, () => { s.busy = false; });
@@ -71,7 +75,9 @@ export function ShotMat({ src, aspect, anchor }) {
   const wp = useMemo(() => new THREE.Vector3(), []);
   useFrame(({ camera }, dt) => {
     const s = st.current; s.t += dt;
-    if (list.length < 2 || s.t < 6 || (import.meta.env.DEV && window.__noRotate)) return;
+    if (list.length < 2 || s.t < 6 || (window.__noRotate)) return;
+    // troca a tela só com o carro parado (no modo dirigir): o envio da imagem nunca cai no meio da corrida
+    const car = ui.get().car; if (ui.get().mode === 'game' && car && Math.abs(car.speed) > 1.5) return;
     s.t = 0;
     // só troca a tela que está perto da câmera: as outras ficam paradas (sem envio de textura à toa)
     if (anchor?.current) anchor.current.getWorldPosition(wp);
