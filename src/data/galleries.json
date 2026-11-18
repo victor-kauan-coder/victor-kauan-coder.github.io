@@ -1,0 +1,410 @@
+{
+ "termolog": [
+  {
+   "src": "projetos/termolog/01.webp",
+   "thumb": "projetos/termolog/01-t.webp",
+   "alt": "Painel: 8 salas, 3 fora da faixa, a pior leitura em destaque"
+  },
+  {
+   "src": "projetos/termolog/02.webp",
+   "thumb": "projetos/termolog/02-t.webp",
+   "alt": "Sala de Servidores: faixa, conformidade em 24 h e os 3 sensores"
+  },
+  {
+   "src": "projetos/termolog/03.webp",
+   "thumb": "projetos/termolog/03-t.webp",
+   "alt": "Alertas pendentes: reconhecer e registrar a ação tomada"
+  },
+  {
+   "src": "projetos/termolog/04.webp",
+   "thumb": "projetos/termolog/04-t.webp",
+   "alt": "Relatórios para a vigilância sanitária, com gráfico e exportação em PDF, Excel e CSV"
+  },
+  {
+   "src": "projetos/termolog/05.webp",
+   "thumb": "projetos/termolog/05-t.webp",
+   "alt": "Painel no tema claro"
+  },
+  {
+   "src": "projetos/termolog/06.webp",
+   "thumb": "projetos/termolog/06-t.webp",
+   "alt": "Câmara Fria 1 no tema claro"
+  },
+  {
+   "src": "projetos/termolog/07.webp",
+   "thumb": "projetos/termolog/07-t.webp",
+   "alt": "Gateways: último contato de cada nó central"
+  },
+  {
+   "src": "projetos/termolog/08.webp",
+   "thumb": "projetos/termolog/08-t.webp",
+   "alt": "Relatórios no tema escuro"
+  },
+  {
+   "src": "projetos/termolog/09.webp",
+   "thumb": "projetos/termolog/09-t.webp",
+   "alt": "Painel no celular",
+   "tall": true
+  },
+  {
+   "src": "projetos/termolog/10.webp",
+   "thumb": "projetos/termolog/10-t.webp",
+   "alt": "Sala no celular, tema claro",
+   "tall": true
+  },
+  {
+   "src": "projetos/termolog/11.webp",
+   "thumb": "projetos/termolog/11-t.webp",
+   "alt": "Alertas no celular",
+   "tall": true
+  }
+ ],
+ "vcall": [
+  {
+   "src": "projetos/vcall/01.webp",
+   "thumb": "projetos/vcall/01-t.webp",
+   "alt": "Tela inicial: criar ou entrar numa sala"
+  },
+  {
+   "src": "projetos/vcall/02.webp",
+   "thumb": "projetos/vcall/02-t.webp",
+   "alt": "Saguão: câmera, microfone e nome antes de entrar"
+  },
+  {
+   "src": "projetos/vcall/03.webp",
+   "thumb": "projetos/vcall/03-t.webp",
+   "alt": "Planning Poker com média, mediana e consenso"
+  },
+  {
+   "src": "projetos/vcall/04.webp",
+   "thumb": "projetos/vcall/04-t.webp",
+   "alt": "Retrospectiva dentro da chamada"
+  },
+  {
+   "src": "projetos/vcall/05.webp",
+   "thumb": "projetos/vcall/05-t.webp",
+   "alt": "Legendas ao vivo durante a conversa"
+  },
+  {
+   "src": "projetos/vcall/06.webp",
+   "thumb": "projetos/vcall/06-t.webp",
+   "alt": "Moderação: anfitrião controla quem fala e compartilha"
+  },
+  {
+   "src": "projetos/vcall/07.webp",
+   "thumb": "projetos/vcall/07-t.webp",
+   "alt": "Sala de espera: o anfitrião aprova quem entra"
+  },
+  {
+   "src": "projetos/vcall/08.webp",
+   "thumb": "projetos/vcall/08-t.webp",
+   "alt": "Compartilhar uma janela específica"
+  },
+  {
+   "src": "projetos/vcall/09.webp",
+   "thumb": "projetos/vcall/09-t.webp",
+   "alt": "Modo daily com cronômetro por pessoa"
+  },
+  {
+   "src": "projetos/vcall/10.webp",
+   "thumb": "projetos/vcall/10-t.webp",
+   "alt": "Como a conexão ponto a ponto é montada"
+  },
+  {
+   "src": "projetos/vcall/11.webp",
+   "thumb": "projetos/vcall/11-t.webp",
+   "alt": "Painel de rede: qualidade da conexão de cada participante"
+  },
+  {
+   "src": "projetos/vcall/12.webp",
+   "thumb": "projetos/vcall/12-t.webp",
+   "alt": "Tela inicial no tema claro"
+  }
+ ],
+ "songv": [
+  {
+   "src": "projetos/songv/01.webp",
+   "thumb": "projetos/songv/01-t.webp",
+   "alt": "Player com fundo tingido pela capa",
+   "tall": true
+  },
+  {
+   "src": "projetos/songv/02.webp",
+   "thumb": "projetos/songv/02-t.webp",
+   "alt": "Letra sincronizada com tradução linha a linha",
+   "tall": true
+  },
+  {
+   "src": "projetos/songv/03.webp",
+   "thumb": "projetos/songv/03-t.webp",
+   "alt": "Letra em coreano com romanização",
+   "tall": true
+  },
+  {
+   "src": "projetos/songv/04.webp",
+   "thumb": "projetos/songv/04-t.webp",
+   "alt": "Início: recentes, mais tocadas, álbuns e artistas",
+   "tall": true
+  },
+  {
+   "src": "projetos/songv/05.webp",
+   "thumb": "projetos/songv/05-t.webp",
+   "alt": "Biblioteca de álbuns",
+   "tall": true
+  },
+  {
+   "src": "projetos/songv/06.webp",
+   "thumb": "projetos/songv/06-t.webp",
+   "alt": "Álbum",
+   "tall": true
+  },
+  {
+   "src": "projetos/songv/07.webp",
+   "thumb": "projetos/songv/07-t.webp",
+   "alt": "Fila de reprodução",
+   "tall": true
+  },
+  {
+   "src": "projetos/songv/08.webp",
+   "thumb": "projetos/songv/08-t.webp",
+   "alt": "Playlist com mosaico das capas",
+   "tall": true
+  },
+  {
+   "src": "projetos/songv/09.webp",
+   "thumb": "projetos/songv/09-t.webp",
+   "alt": "Escolha do idioma da tradução",
+   "tall": true
+  },
+  {
+   "src": "projetos/songv/10.webp",
+   "thumb": "projetos/songv/10-t.webp",
+   "alt": "Configurações",
+   "tall": true
+  }
+ ],
+ "duckv": [
+  {
+   "src": "projetos/duckv/01.webp",
+   "thumb": "projetos/duckv/01-t.webp",
+   "alt": "O app no celular: sessões, conversa e permissões"
+  },
+  {
+   "src": "projetos/duckv/02.webp",
+   "thumb": "projetos/duckv/02-t.webp",
+   "alt": "App no computador que liga os agentes ao celular"
+  },
+  {
+   "src": "projetos/duckv/03.webp",
+   "thumb": "projetos/duckv/03-t.webp",
+   "alt": "Início: sessões abertas de cada agente",
+   "tall": true
+  },
+  {
+   "src": "projetos/duckv/04.webp",
+   "thumb": "projetos/duckv/04-t.webp",
+   "alt": "Conversa com o agente pelo celular",
+   "tall": true
+  },
+  {
+   "src": "projetos/duckv/05.webp",
+   "thumb": "projetos/duckv/05-t.webp",
+   "alt": "Pedido de permissão para rodar um comando",
+   "tall": true
+  },
+  {
+   "src": "projetos/duckv/06.webp",
+   "thumb": "projetos/duckv/06-t.webp",
+   "alt": "Várias contas de cada agente",
+   "tall": true
+  },
+  {
+   "src": "projetos/duckv/07.webp",
+   "thumb": "projetos/duckv/07-t.webp",
+   "alt": "Nova sessão em qualquer pasta",
+   "tall": true
+  },
+  {
+   "src": "projetos/duckv/08.webp",
+   "thumb": "projetos/duckv/08-t.webp",
+   "alt": "Automações agendadas",
+   "tall": true
+  },
+  {
+   "src": "projetos/duckv/09.webp",
+   "thumb": "projetos/duckv/09-t.webp",
+   "alt": "Equipe de agentes trabalhando junto",
+   "tall": true
+  },
+  {
+   "src": "projetos/duckv/10.webp",
+   "thumb": "projetos/duckv/10-t.webp",
+   "alt": "Tema escuro",
+   "tall": true
+  }
+ ],
+ "farmacia": [
+  {
+   "src": "projetos/farmacia/01.webp",
+   "thumb": "projetos/farmacia/01-t.webp",
+   "alt": "Pharmavision: painel de vendas por filial (dados fictícios)"
+  },
+  {
+   "src": "projetos/farmacia/02.webp",
+   "thumb": "projetos/farmacia/02-t.webp",
+   "alt": "Pharmavision: estoque (dados fictícios)"
+  },
+  {
+   "src": "projetos/farmacia/03.webp",
+   "thumb": "projetos/farmacia/03-t.webp",
+   "alt": "Pharmavision: metas de venda (dados fictícios)"
+  },
+  {
+   "src": "projetos/farmacia/04.webp",
+   "thumb": "projetos/farmacia/04-t.webp",
+   "alt": "Pharmavision: buscar produto, comparar filiais e curva ABC"
+  },
+  {
+   "src": "projetos/farmacia/05.webp",
+   "thumb": "projetos/farmacia/05-t.webp",
+   "alt": "Pharmavision no celular",
+   "tall": true
+  },
+  {
+   "src": "projetos/farmacia/06.webp",
+   "thumb": "projetos/farmacia/06-t.webp",
+   "alt": "OrçaLink: painel dentro do WhatsApp Web"
+  },
+  {
+   "src": "projetos/farmacia/07.webp",
+   "thumb": "projetos/farmacia/07-t.webp",
+   "alt": "OrçaLink: busca do orçamento no ERP"
+  },
+  {
+   "src": "projetos/farmacia/08.webp",
+   "thumb": "projetos/farmacia/08-t.webp",
+   "alt": "OrçaLink: mensagem montada para o cliente"
+  },
+  {
+   "src": "projetos/farmacia/09.webp",
+   "thumb": "projetos/farmacia/09-t.webp",
+   "alt": "OrçaLink: orçamento enviado na conversa"
+  }
+ ],
+ "voto": [
+  {
+   "src": "projetos/voto/01.webp",
+   "thumb": "projetos/voto/01-t.webp",
+   "alt": "Consulta de político pela urna eletrônica"
+  },
+  {
+   "src": "projetos/voto/02.webp",
+   "thumb": "projetos/voto/02-t.webp",
+   "alt": "Carreira completa de um político"
+  },
+  {
+   "src": "projetos/voto/03.webp",
+   "thumb": "projetos/voto/03-t.webp",
+   "alt": "Gastos de campanha e de onde veio o dinheiro"
+  },
+  {
+   "src": "projetos/voto/04.webp",
+   "thumb": "projetos/voto/04-t.webp",
+   "alt": "Evolução do patrimônio declarado"
+  },
+  {
+   "src": "projetos/voto/05.webp",
+   "thumb": "projetos/voto/05-t.webp",
+   "alt": "Quem tentou a reeleição e quem conseguiu"
+  },
+  {
+   "src": "projetos/voto/06.webp",
+   "thumb": "projetos/voto/06-t.webp",
+   "alt": "Atlas por cargo"
+  },
+  {
+   "src": "projetos/voto/07.webp",
+   "thumb": "projetos/voto/07-t.webp",
+   "alt": "Resumo por estado"
+  },
+  {
+   "src": "projetos/voto/08.webp",
+   "thumb": "projetos/voto/08-t.webp",
+   "alt": "Escolaridade dos candidatos"
+  },
+  {
+   "src": "projetos/voto/09.webp",
+   "thumb": "projetos/voto/09-t.webp",
+   "alt": "Versão simples, para quem tem pouca familiaridade"
+  },
+  {
+   "src": "projetos/voto/10.webp",
+   "thumb": "projetos/voto/10-t.webp",
+   "alt": "Urna no celular",
+   "tall": true
+  },
+  {
+   "src": "projetos/voto/11.webp",
+   "thumb": "projetos/voto/11-t.webp",
+   "alt": "Carreira no celular",
+   "tall": true
+  },
+  {
+   "src": "projetos/voto/12.webp",
+   "thumb": "projetos/voto/12-t.webp",
+   "alt": "Gastos no celular",
+   "tall": true
+  }
+ ],
+ "esmartigado": [
+  {
+   "src": "projetos/esmartigado/01.webp",
+   "thumb": "projetos/esmartigado/01-t.webp",
+   "alt": "Início: visão geral do rebanho"
+  },
+  {
+   "src": "projetos/esmartigado/02.webp",
+   "thumb": "projetos/esmartigado/02-t.webp",
+   "alt": "Rastreamento: mapa do curral com cada animal"
+  },
+  {
+   "src": "projetos/esmartigado/03.webp",
+   "thumb": "projetos/esmartigado/03-t.webp",
+   "alt": "Alimentação: nível de ração em tempo real"
+  },
+  {
+   "src": "projetos/esmartigado/04.webp",
+   "thumb": "projetos/esmartigado/04-t.webp",
+   "alt": "Histórico e calibração do cocho"
+  },
+  {
+   "src": "projetos/esmartigado/05.webp",
+   "thumb": "projetos/esmartigado/05-t.webp",
+   "alt": "Financeiro: custos e previsão de consumo"
+  }
+ ],
+ "clock": [
+  {
+   "src": "projetos/clock/01.webp",
+   "thumb": "projetos/clock/01-t.webp",
+   "alt": "O relógio mostrando um recado"
+  },
+  {
+   "src": "projetos/clock/02.webp",
+   "thumb": "projetos/clock/02-t.webp",
+   "alt": "Arquitetura: ESP8266, matriz, Telegram e painel web"
+  },
+  {
+   "src": "projetos/clock/03.webp",
+   "thumb": "projetos/clock/03-t.webp",
+   "alt": "Painel web local: brilho, velocidade e texto",
+   "tall": true
+  },
+  {
+   "src": "projetos/clock/04.webp",
+   "thumb": "projetos/clock/04-t.webp",
+   "alt": "Bot do Telegram enviando mensagem",
+   "tall": true
+  }
+ ]
+}
