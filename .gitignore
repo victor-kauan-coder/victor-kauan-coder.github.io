@@ -2,3 +2,4 @@ node_modules
 dist
 .impeccable/mocks
 .impeccable/review
+.impeccable/
