@@ -78,7 +78,7 @@ function Voto() {
   return (
     <div className="sig sig-voto" aria-hidden>
       <div className="screen"><span className="d d1">1</span><span className="d d2">3</span><small>SEU VOTO PARA</small></div>
-      <div className="keys">
+      <div className="urna-keys">
         {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => <span key={n} className={n === 1 || n === 3 ? `k press p${n}` : 'k'}>{n}</span>)}
         <span className="k branco">BRANCO</span><span className="k corrige">CORRIGE</span><span className="k confirma">CONFIRMA</span>
       </div>
