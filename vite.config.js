@@ -6,6 +6,6 @@ export default defineConfig({
   base: '/',
   build: {
     chunkSizeWarningLimit: 1200,
-    rollupOptions: { output: { manualChunks: { three: ['three'], r3f: ['@react-three/fiber', '@react-three/drei'], fisica: ['@react-three/rapier'] } } },
+    rollupOptions: { output: { manualChunks: { three: ['three'], r3f: ['@react-three/fiber', '@react-three/drei'] } } },
   },
 });

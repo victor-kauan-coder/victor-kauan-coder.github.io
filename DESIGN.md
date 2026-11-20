@@ -1,0 +1,46 @@
+# Design do portfólio
+
+Lookbook escuro: cada projeto é apresentado como uma campanha de produto, com a marca real, as telas reais dentro de aparelhos e animação ligada à rolagem.
+
+## Cores
+
+| Token | Valor | Uso |
+|---|---|---|
+| `--ink` | `#0b0b0a` | fundo da página |
+| `--ink-2` / `--ink-3` | `#131312` / `#1b1b19` | superfícies (legendas, fila de vídeos) |
+| `--bone` | `#f2efe8` | texto principal, botão primário |
+| `--stone` | `#a8a59d` | texto secundário |
+| `--rule` / `--rule-2` | osso a 14% / 26% | filetes de 1px |
+| `--ember` | `#f0643c` | único acento do site (seleção, cursor de texto) |
+| `--pc` | cor de cada projeto | luz de fundo do anúncio, contorno do nome gigante, marcadores |
+
+A cor de um projeto aparece só dentro do anúncio dele. O QuizzV troca `--pc` pela cor de destaque escolhida no seletor.
+
+## Tipografia
+
+- Display: Archivo Variable condensado (`font-stretch: 62%`), caixa alta, peso 800. Nome na abertura, manchete de cada anúncio, títulos de seção.
+- Texto: Geist Variable.
+- Dados técnicos (stack, durações): Geist Mono.
+- Fontes servidas pelo próprio site (pacotes `@fontsource`).
+
+## Forma
+
+- Cantos retos em tudo que é da página (botões, legendas, painéis). Os aparelhos mantêm os cantos reais.
+- Botão primário: osso chapado com texto em tinta, caixa alta espaçada. Secundário: texto com sublinhado que recolhe no hover.
+
+## Componentes
+
+- **Anúncio (`Look`)**: seção alta com conteúdo preso na tela. A logo nasce grande no centro e sobe para o lugar; a manchete sobe palavra por palavra; funcionalidades entram em sequência; as telas trocam conforme a rolagem; legenda com marcadores de progresso.
+- **Vitrine (`Devices`)**: MacBook Pro e iPhone 14 Pro da biblioteca devices.css (MIT). A tela de cada aparelho assume a proporção exata das capturas do projeto; capturas de outra proporção ficam só na galeria.
+- **Momento 3D**: só no TermoLOG. Peças da biblioteca 3D do KiCad sobre uma placa com trilhas, display com a leitura ao vivo, ondas de rádio e LED que acende no alerta. A cena é preparada com o navegador ocioso, antes de a pessoa chegar.
+- **Sala de vídeos**: player e fila; ao terminar, toca o próximo.
+
+## Movimento
+
+- Animações só em `transform` e `opacity`; nada que repinte a tela inteira a cada quadro (sem filtros nem fundos que mudam com a rolagem).
+- `prefers-reduced-motion` desliga entradas, giros e trocas automáticas.
+
+## Telas pequenas
+
+- Até 860px: seções deixam de ficar presas, a vitrine vem antes do texto e as telas trocam sozinhas.
+- Telas baixas (até 900px de altura) ou até 1200px de largura: anúncio compacto (menos itens, fonte menor) para nada sobrepor.

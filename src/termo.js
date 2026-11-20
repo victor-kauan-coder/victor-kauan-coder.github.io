@@ -1,4 +1,4 @@
-import { createStore, unlock } from './store.js';
+import { createStore } from './store.js';
 
 // Simulação do TermoLOG: o ESP32 lê a sala a cada 1,2 s, a API grava, o painel decide o alerta.
 // Mesma regra do projeto: alerta quando a leitura sai da faixa por 3 leituras seguidas.
@@ -29,7 +29,7 @@ function step() {
   const outCount = out ? s.outCount + 1 : 0;
   const alert = outCount >= 3 ? true : out ? s.alert : false;
   const lines = [`${clock()}  ESP32 sala-204  POST /leituras  ${fmt(temp)} °C  ${Math.round(hum)}%`, `${clock()}  API  201 Created  leitura #${s.seq + 1} gravada`];
-  if (alert && !s.alert) { lines.push(`${clock()}  ALERTA  sala-204 fora da faixa (${fmt(temp)} °C > ${s.max} °C)`); unlock('alerta'); }
+  if (alert && !s.alert) { lines.push(`${clock()}  ALERTA  sala-204 fora da faixa (${fmt(temp)} °C > ${s.max} °C)`); }
   if (!alert && s.alert) lines.push(`${clock()}  OK  sala-204 voltou para a faixa`);
   termo.set({ temp, hum, outCount, alert, history: [...s.history.slice(1), temp], log: [...lines.reverse(), ...s.log].slice(0, 14), seq: s.seq + 1 });
 }
