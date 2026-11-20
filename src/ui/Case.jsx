@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
-import { X, ExternalLink, Lock, Play, Pause, ChevronLeft, ChevronRight, Car } from 'lucide-react';
+import { X, ExternalLink, Lock, Play, Pause, ChevronLeft, ChevronRight } from 'lucide-react';
 import { stations } from '../data/projects.js';
 import { ui, useStore } from '../store.js';
-import { WIDGET } from './Project.jsx';
+import { WIDGET } from './Widgets.jsx';
 
 // Demonstração: as telas reais do projeto passando como um vídeo, com legenda e barra de progresso.
 export function Tour({ shots, color }) {
@@ -60,7 +60,6 @@ export function CaseStudy() {
   const s = stations.find((x) => x.id === id);
   if (!s) return null;
   const Live = WIDGET[s.id];
-  const i = stations.indexOf(s);
   return (
     <div className="sheet case-sheet" role="dialog" aria-modal="true" aria-label={`Estudo de caso: ${s.name}`} onClick={close}>
       <article className="case" style={{ '--c': s.color }} onClick={(e) => e.stopPropagation()} tabIndex={-1} ref={ref}>
@@ -94,7 +93,6 @@ export function CaseStudy() {
           <section className="case-demo">
             {Live && <div className="live"><h3>Ao vivo</h3><Live /></div>}
             <Tour shots={s.shots} color={s.color} />
-            <button className="btn" onClick={() => { ui.set({ dossier: null, mode: 'game', target: i, near: null }); }}><Car size={18} /> Ir dirigindo até o {s.place.toLowerCase()}</button>
           </section>
         )}
         {tab === 'arq' && (

@@ -48,10 +48,10 @@ const CASE = {
     solution: 'O relógio recebe recados pelo Telegram e pelo painel web local, e se configura no Wi-Fi sem regravar.',
     metrics: [['32×8', 'LEDs na matriz'], ['NTP', 'hora certa pela internet'], ['2', 'jeitos de mandar recado']],
   },
-  angry: {
-    problem: 'Aprender computação gráfica de verdade, sem motor de jogo pronto.',
-    solution: 'Um jogo de estilingue em 3D feito do zero em C++ com OpenGL: câmera, luz, texturas e física.',
-    metrics: [['C++', 'do zero'], ['OpenGL', 'render'], ['0', 'motores prontos']],
+  quizzv: {
+    problem: 'Montar simulado dá trabalho, e estudar sozinho cansa antes da prova.',
+    solution: 'A IA monta o quiz a partir do material da aula e a turma joga junto em tempo real, com ranking a cada pergunta e reforço nos assuntos em que cada um errou.',
+    metrics: [['3', 'provedores de IA: Gemini, DeepSeek e Ollama'], ['3', 'plataformas: Android, Windows e iPhone'], ['XChaCha20', 'criptografia dos arquivos .qv']],
   },
 };
 
@@ -82,6 +82,33 @@ export const stations = [
     stack: ['ESP32', 'DHT22', 'LoRa', 'FastAPI', 'PostgreSQL', 'React Native web', 'TypeScript', 'Docker', 'Playwright'],
     links: [{ label: 'Código', href: 'https://github.com/ES2-UFPI/TermoLOG' }, { label: 'Wiki', href: 'https://github.com/ES2-UFPI/TermoLOG/wiki' }],
     note: 'Capturas de uma instância de demonstração com 8 salas e 3 dias de leituras simuladas.',
+  },
+  {
+    id: 'quizzv',
+    name: 'QuizzV',
+    color: '#4a74f0',
+    place: 'Sala de aula',
+    tagline: 'A IA monta o quiz. A turma joga junto.',
+    text: 'Quizzes de estudo gerados por IA a partir de um tema, PDF, DOCX ou fotos, para jogar sozinho ou com a turma em tempo real. Roda no Android, no Windows e compila para iPhone; os quizzes viajam pelo WhatsApp em arquivos .qv criptografados.',
+    team: 'Projeto pessoal',
+    features: [
+      'Gerador com IA a partir de tema, PDF, DOCX ou fotos, com Gemini, DeepSeek ou Ollama',
+      'Multiplayer em tempo real: sala com código, quem está online e ranking a cada pergunta',
+      'Reforço com IA nos assuntos em que você mais errou, sem repetir as questões',
+      'Quiz dentro de uma chamada do Vcall, com o celular como controle',
+      'Arquivos .qv criptografados (XChaCha20-Poly1305) para compartilhar no WhatsApp',
+      'Exportação em PDF com gabarito comentado, pastas, busca e seis cores de destaque',
+    ],
+    role: 'Projeto pessoal, feito por mim de ponta a ponta: o app em React Native, o gerador com IA, o multiplayer com Supabase Realtime, o formato .qv e a integração com o Vcall.',
+    challenges: [
+      'Fechar a pergunta quando todos responderam, com quem caiu da sala e quem entrou no meio',
+      'Abrir o .qv que o WhatsApp entrega como arquivo genérico, direto no app',
+      'Confete com física e respostas que pulam ou tremem, respeitando reduzir movimento',
+    ],
+    arch: [['App', 'Expo / React Native'], ['IA', 'Gemini, DeepSeek ou Ollama'], ['Supabase Realtime', 'salas e ranking'], ['Vcall', 'quiz na chamada'], ['Tauri', 'versão Windows']],
+    stack: ['React Native', 'Expo', 'Supabase', 'Gemini', 'Tauri', 'XChaCha20'],
+    links: [{ label: 'Código', href: 'https://github.com/victor-kauan-coder/QuizzV-Android' }],
+    note: 'Telas capturadas da versão web do próprio app, com uma biblioteca de quizzes de demonstração.',
   },
   {
     id: 'vcall',
@@ -159,7 +186,7 @@ export const stations = [
     color: '#3fbf7f',
     place: 'Farmácia',
     tagline: 'O banco da farmácia virou painel. O orçamento vai num clique.',
-    text: 'Dois sistemas para uma rede de farmácias de manipulação. O Pharmavision lê o banco Firebird do ERP (só leitura) e mostra vendas, estoque, ranking por filial, curva ABC e metas. O OrçaLink manda o orçamento do ERP para o cliente no WhatsApp sem redigitar fórmula, composição ou valor.',
+    text: 'Dois sistemas para uma farmácia de manipulação com várias filiais. O Pharmavision lê o banco Firebird do ERP (só leitura) e mostra vendas, estoque, ranking por filial, curva ABC e metas. O OrçaLink manda o orçamento do ERP para o cliente no WhatsApp sem redigitar fórmula, composição ou valor.',
     team: 'Sistemas para cliente',
     features: [
       'Painel de vendas por período e filial, ranking de vendedores e metas',
@@ -207,7 +234,7 @@ export const stations = [
     place: 'Curral',
     tagline: 'O curral na palma da mão.',
     text: 'Gestão de rebanho com sensores reais: nível do cocho, presença dos animais, consumo diário e custo da engorda calculado pelo consumo medido. App iOS nativo conversando com ESP32 pelo Node-RED.',
-    team: 'Projeto em equipe',
+    team: 'Projeto em equipe · HackaTruck IBM & Apple',
     features: [
       'Nível de ração em porcentagem e quilos, com alerta normal, baixo e crítico',
       'Leitura segurada quando o sensor detecta animal no cocho (evita leitura falsa)',
@@ -221,36 +248,6 @@ export const stations = [
     stack: ['SwiftUI', 'MapKit', 'ESP32', 'Node-RED'],
     links: [{ label: 'Código', href: 'https://github.com/victor-kauan-coder/Esmartigado' }],
   },
-  {
-    id: 'clock',
-    name: 'LED Clock',
-    color: '#ff3b3b',
-    place: 'Oficina',
-    tagline: 'Um relógio que recebe recado pelo Telegram.',
-    text: 'ESP8266 com matriz de LED MAX7219: hora por NTP, mensagens enviadas por um bot do Telegram e um painel web local com API REST para brilho, velocidade e texto. O Wi-Fi é configurado sem reprogramar, pelo WiFiManager.',
-    team: 'Projeto pessoal',
-    features: ['Hora certa por NTP', 'Recados pelo Telegram, com liga e desliga do bot', 'Painel web local com API REST', 'Brilho e velocidade de rolagem ajustáveis', 'Configuração de Wi-Fi sem regravar o firmware'],
-    role: 'Hardware, firmware em C++ e painel web.',
-    challenges: ['Rodar bot, servidor web e animação da matriz no mesmo laço do ESP8266 sem travar'],
-    arch: [['Telegram', 'bot'], ['ESP8266', 'firmware C++'], ['MAX7219', 'matriz 32×8'], ['Painel web', 'API REST']],
-    stack: ['ESP8266', 'C++', 'Arduino', 'MAX7219', 'Telegram Bot', 'API REST'],
-    links: [{ label: 'Código', href: 'https://github.com/victor-kauan-coder/Clock' }],
-  },
-  {
-    id: 'angry',
-    name: 'Angry Birds 3D',
-    color: '#5ec8ff',
-    place: 'Fliperama',
-    tagline: 'Física e câmera 3D escritas na mão em C++.',
-    text: 'Releitura 3D do jogo de estilingue feita do zero em C++ com OpenGL e GLUT: modelos, texturas, iluminação, câmera e física de lançamento, com blocos de madeira e gelo que racham. Aqui ao lado tem uma versão de bolso para você jogar.',
-    team: 'Projeto de Computação Gráfica · UFPI',
-    features: ['Física de lançamento e colisão', 'Blocos que racham e quebram', 'Câmera 3D que acompanha o pássaro', 'Modelos e texturas carregados de arquivo'],
-    role: 'Programação do jogo em C++ com OpenGL.',
-    challenges: ['Física e colisões sem motor pronto'],
-    arch: [['C++', 'lógica'], ['OpenGL / GLUT', 'render'], ['Física', 'lançamento e colisão']],
-    stack: ['C++', 'OpenGL', 'GLUT'],
-    links: [{ label: 'Código', href: 'https://github.com/victor-kauan-coder/AngryBirds3D_OpenGL_Glut' }],
-  },
 ].map((s) => ({ ...s, ...CASE[s.id], shots: galleries[s.id] ? gal(s.id) : [] }));
 
 export const archive = [
@@ -262,11 +259,18 @@ export const archive = [
     shot: tex('projetos/pet-saude-dashboard.webp'),
   },
   {
-    name: 'QuizzV',
-    text: 'Gera baterias de questões a partir de PDFs com RAG e LLM, no computador e no Android.',
-    stack: ['Python', 'RAG', 'LLM', 'React Native'],
-    href: 'https://github.com/victor-kauan-coder/QuizzV',
-    shot: tex('projetos/quizzv-pc.webp'),
+    name: 'LED Clock',
+    text: 'Relógio de matriz de LED com ESP8266 que recebe recados pelo Telegram e por um painel web local, com hora certa pela internet.',
+    stack: ['ESP8266', 'C++', 'MAX7219', 'Telegram Bot'],
+    href: 'https://github.com/victor-kauan-coder/Clock',
+    shot: tex('projetos/clock/01.webp'),
+  },
+  {
+    name: 'Angry Birds 3D',
+    text: 'Releitura 3D do jogo de estilingue feita do zero em C++ com OpenGL e GLUT: modelos, texturas, iluminação, câmera e física de lançamento.',
+    stack: ['C++', 'OpenGL', 'GLUT'],
+    href: 'https://github.com/victor-kauan-coder/AngryBirds3D_OpenGL_Glut',
+    shot: tex('projetos/angry/01.webp'),
   },
   {
     name: 'OMR Scanner',
@@ -295,3 +299,36 @@ export const contact = {
   whatsapp: 'https://wa.me/5599981109579',
   cv: `${base}assets/curriculo.pdf`,
 };
+
+// Ligações entre projetos: viram as trilhas de cobre da bancada. Só tecnologia que os dois usam de verdade.
+export const LINKS = [
+  ['termolog', 'esmartigado', 'ESP32 em campo mandando leitura para um app'],
+  ['termolog', 'farmacia', 'API em FastAPI lendo e entregando dados'],
+  ['termolog', 'voto', 'PostgreSQL e testes visuais com Playwright'],
+  ['vcall', 'duckv', 'Tailscale ligando aparelhos sem servidor no meio'],
+  ['duckv', 'farmacia', 'Tailscale no acesso remoto à loja'],
+  ['songv', 'duckv', 'Apps Android nativos'],
+  ['voto', 'farmacia', 'React, TypeScript e Vite no front'],
+  ['quizzv', 'vcall', 'O quiz roda dentro de uma chamada do Vcall'],
+  ['quizzv', 'duckv', 'Apps para Android'],
+];
+
+// As seis cores de destaque que o QuizzV deixa escolher nas configurações (capturadas no app, tema escuro).
+const qz = (id) => ({ home: `${base}projetos/quizzv/cor-${id}-biblioteca-m.webp`, quiz: `${base}projetos/quizzv/cor-${id}-questao-m.webp` });
+export const quizzvCores = [
+  { id: 'orange', name: 'Sunset', hex: '#F97316', ...qz('orange') },
+  { id: 'navy', name: 'Marinho', hex: '#1E3A8A', ...qz('navy') },
+  { id: 'cobalt', name: 'Cobalto', hex: '#2563EB', ...qz('cobalt') },
+  { id: 'pink', name: 'Rosa', hex: '#EC4899', ...qz('pink') },
+  { id: 'emerald', name: 'Esmeralda', hex: '#10B981', ...qz('emerald') },
+  { id: 'violet', name: 'Violeta', hex: '#8B5CF6', ...qz('violet') },
+];
+
+// Vídeos dos projetos (peças de divulgação, tour e tutorial feitos para cada um), na ordem da fila.
+const vid = (f) => ({ src: `${base}videos/${f}.mp4`, poster: `${base}videos/${f}.jpg` });
+export const videos = [
+  { id: 'vcall', title: 'Vcall', kind: 'Apresentação', dur: '1:28', ...vid('vcall') },
+  { id: 'songv', title: 'SongV', kind: 'Apresentação', dur: '1:50', ...vid('songv') },
+  { id: 'duckv', title: 'duckV', kind: 'Apresentação', dur: '1:01', ...vid('duckv') },
+  { id: 'farmacia', title: 'PharmaVision', kind: 'Apresentação, dados fictícios', dur: '1:18', ...vid('pharmavision') },
+];
