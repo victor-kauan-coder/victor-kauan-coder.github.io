@@ -25,11 +25,12 @@ Victor entrega o sistema inteiro, do sensor/hardware ao app que alguém usa: ESP
 
 ## Capabilities and Constraints
 
-- Projetos em destaque: TermoLOG (protagonista, com simulação interativa sensor → API → painel → alerta), Vcall, duckv, SongV, Voto Aberto (Azulejo), Pharmavision, OrçaLink, Esmartigado, Clock.
+- Projetos em destaque: VIA (primeiro da lista e da abertura), TermoLOG (com simulação interativa sensor → API → painel → alerta), Vcall, duckv, SongV, Voto Aberto (Azulejo), Pharmavision, OrçaLink, Esmartigado, Clock.
 - Projetos antigos mantidos (reais): PET Saúde (gestão de participantes + prontuários), QuizzV, OMR Scanner (CESLA), Angry Birds 3D OpenGL, RISC-V pipeline, Dashboard de relatórios.
 - Removidos por falta de evidência: StudyAI, Verilog Didático, 8-Puzzle, tela de boot e medidores falsos de MEM/CPU.
 - Nada do projeto Galaxy aparece no site.
 - Repositórios privados (Voto Aberto, Pharmavision, OrçaLink) entram sem link de código, só descrição e telas.
+- VIA é código privado e as capturas usam só dados fictícios.
 - Pharmavision e OrçaLink atendem uma farmácia cliente: só capturas com dados fictícios (modo mock).
 
 ## Brand Commitments

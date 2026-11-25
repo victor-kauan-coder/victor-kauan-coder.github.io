@@ -48,6 +48,11 @@ const CASE = {
     solution: 'O relógio recebe recados pelo Telegram e pelo painel web local, e se configura no Wi-Fi sem regravar.',
     metrics: [['32×8', 'LEDs na matriz'], ['NTP', 'hora certa pela internet'], ['2', 'jeitos de mandar recado']],
   },
+  via: {
+    problem: 'Quem vende pelo WhatsApp perde cliente por demora, esquece o retorno prometido e não sabe quanto dinheiro está parado em orçamentos.',
+    solution: 'O assistente responde como uma pessoa da equipe, usando só o que o negócio escreveu, e passa a conversa para um humano quando precisa. O mesmo painel guarda contatos, funil e tarefas.',
+    metrics: [['10', 'telas no painel'], ['0', 'chaves de API: usa a assinatura do Claude Code'], ['9 s', 'para juntar mensagens picadas antes de responder'], ['25', 'respostas por hora, no máximo, por conversa']],
+  },
   quizzv: {
     problem: 'Montar simulado dá trabalho, e estudar sozinho cansa antes da prova.',
     solution: 'A IA monta o quiz a partir do material da aula e a turma joga junto em tempo real, com ranking a cada pergunta e reforço nos assuntos em que cada um errou.',
@@ -56,6 +61,40 @@ const CASE = {
 };
 
 export const stations = [
+  {
+    id: 'via',
+    name: 'VIA',
+    color: '#a3d96b',
+    place: 'Balcão',
+    tagline: 'Do primeiro oi até o fechamento.',
+    text: 'CRM com atendimento automático para pequenos negócios que vendem pelo WhatsApp. Um processo Node mantém a conexão com o WhatsApp, o Claude Code escreve as respostas a partir dos materiais do negócio e um painel web local reúne conversas, contatos, funil, tarefas, fila de retorno, consumo, materiais, registro e ajustes. Os dados ficam no próprio computador.',
+    team: 'Sistema para negócios',
+    features: [
+      'Atendimento com ritmo humano: junta mensagens picadas, espera, mostra digitando e responde em mensagens curtas',
+      'Entende texto, áudio (transcrito no próprio computador), imagem, vídeo, PDF e localização',
+      'Passa a conversa para uma pessoa por palavra-chave ou por decisão do assistente, e se cala quando alguém assume',
+      'Conversas no painel com anexos, nota de voz, respostas rápidas, citação, reação e mensagens agendadas',
+      'Funil de vendas com arrastar e soltar, motivos de perda, conversão e ticket médio',
+      'Ficha do cliente com etiquetas, campos próprios, tarefas com lembrete e linha do tempo',
+      'Fila de retorno: o que chegou com o sistema fora do ar é respondido depois, da mais antiga para a mais nova',
+      'Consumo de tokens e custo por conversa, com orçamento semanal que pode pausar o assistente',
+      'Materiais editáveis no painel, valendo já na próxima mensagem',
+      'Servidor MCP para consultar conversas, CRM e consumo pelo próprio Claude',
+      'Tema claro e escuro, identidade visual própria e contatos exportados em CSV',
+    ],
+    role: 'Projeto meu: o motor do atendimento, a integração com o WhatsApp e o Claude Code, o servidor e o painel, a identidade visual e a documentação de instalação.',
+    challenges: [
+      'Rodar o Claude com poucas permissões: só leitura numa pasta isolada e páginas de uma lista de sites liberados',
+      'Contornar a corrida de inicialização em que a biblioteca do WhatsApp conecta mas não recebe mensagens',
+      'Não responder em dobro nem perder mensagem quando o processo cai e volta',
+      'Painel sem biblioteca de servidor, preso ao próprio computador por padrão e protegido contra DNS rebinding',
+    ],
+    arch: [['WhatsApp', 'cliente'], ['whatsapp-web.js', 'conexão'], ['Node.js', 'motor e CRM'], ['Claude Code', 'respostas'], ['Whisper', 'áudio local'], ['SSE', 'ao vivo'], ['Painel web', 'HTML, CSS e JS']],
+    stack: ['Node.js', 'JavaScript', 'whatsapp-web.js', 'Claude Code', 'Whisper', 'SSE', 'MCP'],
+    links: [],
+    private: 'Código privado',
+    note: 'Telas do sistema rodando em modo de demonstração: empresa, pessoas, números e valores são fictícios.',
+  },
   {
     id: 'termolog',
     name: 'TermoLOG',
@@ -309,6 +348,8 @@ export const LINKS = [
   ['duckv', 'farmacia', 'Tailscale no acesso remoto à loja'],
   ['songv', 'duckv', 'Apps Android nativos'],
   ['voto', 'farmacia', 'React, TypeScript e Vite no front'],
+  ['via', 'farmacia', 'O WhatsApp como canal de venda'],
+  ['via', 'duckv', 'Claude Code comandado por um servidor em Node'],
   ['quizzv', 'vcall', 'O quiz roda dentro de uma chamada do Vcall'],
   ['quizzv', 'duckv', 'Apps para Android'],
 ];

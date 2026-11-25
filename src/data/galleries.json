@@ -612,5 +612,98 @@
    "w": 780,
    "h": 1688
   }
+ ],
+ "via": [
+  {
+   "src": "projetos/via/01.webp",
+   "thumb": "projetos/via/01-t.webp",
+   "alt": "Visão geral: o que precisa de você agora e o movimento do dia (tema claro)",
+   "w": 1440,
+   "h": 900
+  },
+  {
+   "src": "projetos/via/02.webp",
+   "thumb": "projetos/via/02-t.webp",
+   "alt": "Visão geral: o que precisa de você agora e o movimento do dia (tema escuro)",
+   "w": 1440,
+   "h": 900
+  },
+  {
+   "src": "projetos/via/03.webp",
+   "thumb": "projetos/via/03-t.webp",
+   "alt": "Conversas: o assistente atende e a pessoa assume quando precisa (tema claro)",
+   "w": 1440,
+   "h": 900
+  },
+  {
+   "src": "projetos/via/04.webp",
+   "thumb": "projetos/via/04-t.webp",
+   "alt": "Conversas: o assistente atende e a pessoa assume quando precisa (tema escuro)",
+   "w": 1440,
+   "h": 900
+  },
+  {
+   "src": "projetos/via/05.webp",
+   "thumb": "projetos/via/05-t.webp",
+   "alt": "Funil de vendas: cada etapa é uma estação, com o valor parado nela (tema claro)",
+   "w": 1440,
+   "h": 900
+  },
+  {
+   "src": "projetos/via/06.webp",
+   "thumb": "projetos/via/06-t.webp",
+   "alt": "Funil de vendas: cada etapa é uma estação, com o valor parado nela (tema escuro)",
+   "w": 1440,
+   "h": 900
+  },
+  {
+   "src": "projetos/via/07.webp",
+   "thumb": "projetos/via/07-t.webp",
+   "alt": "Contatos com etiquetas, quem atende, valor em aberto e exportação em CSV (tema claro)",
+   "w": 1440,
+   "h": 900
+  },
+  {
+   "src": "projetos/via/08.webp",
+   "thumb": "projetos/via/08-t.webp",
+   "alt": "Contatos com etiquetas, quem atende, valor em aberto e exportação em CSV (tema escuro)",
+   "w": 1440,
+   "h": 900
+  },
+  {
+   "src": "projetos/via/09.webp",
+   "thumb": "projetos/via/09-t.webp",
+   "alt": "Tarefas por prazo, ligadas a cada cliente (tema claro)",
+   "w": 1440,
+   "h": 900
+  },
+  {
+   "src": "projetos/via/10.webp",
+   "thumb": "projetos/via/10-t.webp",
+   "alt": "Tarefas por prazo, ligadas a cada cliente (tema escuro)",
+   "w": 1440,
+   "h": 900
+  },
+  {
+   "src": "projetos/via/11.webp",
+   "thumb": "projetos/via/11-t.webp",
+   "alt": "Consumo de tokens e custo medidos, contra um orçamento semanal (tema claro)",
+   "w": 1440,
+   "h": 900
+  },
+  {
+   "src": "projetos/via/12.webp",
+   "thumb": "projetos/via/12-t.webp",
+   "alt": "Consumo de tokens e custo medidos, contra um orçamento semanal (tema escuro)",
+   "w": 1440,
+   "h": 900
+  },
+  {
+   "src": "projetos/via/13.webp",
+   "thumb": "projetos/via/13-t.webp",
+   "alt": "Login com uma demonstração do atendimento ao lado",
+   "w": 1440,
+   "h": 900
+  }
  ]
 }

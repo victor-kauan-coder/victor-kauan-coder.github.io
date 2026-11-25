@@ -47,6 +47,7 @@ function Logo({ id, name }) {
     );
     case 'voto': return <span className="logo-set" role="img" aria-label="Voto Aberto"><img src={L('voto.svg')} alt="" style={{ height: 52 }} /><span className="logo-word">Voto Aberto</span></span>;
     case 'esmartigado': return <img src={L('esmartigado.png')} alt="Esmartigado" style={{ height: 130, margin: "-18px 0 -14px" }} />;
+    case 'via': return <img src={L('via.svg')} alt="VIA" style={{ height: 72 }} />;
     case 'quizzv': return <span className="logo-set" role="img" aria-label="QuizzV"><img src={L('quizzv.svg')} alt="" style={{ height: 56 }} /><span className="logo-word">Quizz<b style={{ color: '#F86B23' }}>V</b></span></span>;
     default: return <span className="logo-word big">{name}</span>;
   }

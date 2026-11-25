@@ -17,7 +17,7 @@ const Brand = ({ icon }) => <svg className="brand-icon" viewBox="0 0 24 24" aria
 const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 // Telas reais trocando devagar no quadro da abertura, como fotos de uma campanha.
-const REEL = ['termolog', 'vcall', 'voto', 'farmacia', 'duckv', 'esmartigado'].map((id) => {
+const REEL = ['via', 'termolog', 'vcall', 'voto', 'farmacia', 'duckv', 'esmartigado'].map((id) => {
   const s = stations.find((x) => x.id === id);
   return { id, name: s.name, tag: s.tagline, shot: s.shots[0] };
 });
@@ -43,7 +43,7 @@ function HeroReel() {
   );
 }
 
-const FEATURED = ['termolog', 'quizzv', 'vcall', 'farmacia'].map((id) => stations.find((x) => x.id === id));
+const FEATURED = ['via', 'termolog', 'quizzv', 'vcall'].map((id) => stations.find((x) => x.id === id));
 
 // Texto do "sobre" palavra por palavra: cada palavra acende quando passa pela tela.
 const STATEMENT = 'Sou estudante de Ciência da Computação na UFPI e construo o sistema inteiro: a placa que mede, a API que guarda e o app que avisa quem precisa agir.';
@@ -157,7 +157,7 @@ export default function App() {
             <li><a href={contact.github} target="_blank" rel="noreferrer"><span><Brand icon={siGithub} />GitHub</span><ArrowUpRight size={18} aria-hidden /></a></li>
             <li><a href={contact.cv} download><span><FileDown size={22} aria-hidden />Currículo em PDF</span><ArrowUpRight size={18} aria-hidden /></a></li>
           </ul>
-          <p className="credits">Modelos 3D do nó do TermoLOG: biblioteca 3D do KiCad (CC BY-SA 4.0). Telas de Pharmavision e OrçaLink com dados fictícios. Telas do QuizzV com uma biblioteca de demonstração. Pessoas nas telas do Vcall: fotos de banco de imagens usadas como câmera numa chamada real.</p>
+          <p className="credits">Modelos 3D do nó do TermoLOG: biblioteca 3D do KiCad (CC BY-SA 4.0). Telas de Pharmavision, OrçaLink e VIA com dados fictícios. Telas do QuizzV com uma biblioteca de demonstração. Pessoas nas telas do Vcall: fotos de banco de imagens usadas como câmera numa chamada real.</p>
         </section>
       </main>
       <CaseStudy />
