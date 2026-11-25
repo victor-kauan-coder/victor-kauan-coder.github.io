@@ -369,7 +369,7 @@ export const quizzvCores = traduzir([
 // Vídeos dos projetos (peças de divulgação, tour e tutorial feitos para cada um), na ordem da fila.
 const vid = (f) => ({ src: `${base}videos/${f}.mp4`, poster: `${base}videos/${f}.jpg` });
 export const videos = traduzir([
-  { id: 'via', title: 'VIA', kind: 'Apresentação, dados fictícios', dur: '0:39', ...vid('via') },
+  { id: 'via', title: 'VIA', kind: 'Apresentação, dados fictícios', dur: '0:49', ...vid('via') },
   { id: 'vcall', title: 'Vcall', kind: 'Apresentação', dur: '1:28', ...vid('vcall') },
   { id: 'songv', title: 'SongV', kind: 'Apresentação', dur: '1:50', ...vid('songv') },
   { id: 'duckv', title: 'duckV', kind: 'Apresentação', dur: '1:01', ...vid('duckv') },
