@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { ArrowUpRight, Lock, Play } from 'lucide-react';
 import { stations, LINKS, quizzvCores, videos } from '../data/projects.js';
 import { ui } from '../store.js';
+import { t } from '../i18n.js';
 import { Showcase, splitShots, ColorPhones } from './Devices.jsx';
 
 // fração inicial da seção em que só a marca aparece, grande, antes do anúncio se montar
@@ -31,15 +32,23 @@ export function useSectionProgress(ref, cb) {
   }, [ref]);
 }
 
+// Logos com texto claro têm uma segunda versão em tinta para o tema claro; o CSS mostra só uma.
+const Par = ({ f, alt, h }) => (
+  <>
+    <img className="so-escuro" src={L(`${f}.svg`)} alt={alt} style={{ height: h }} />
+    <img className="so-claro" src={L(`${f}-tinta.svg`)} alt={alt} style={{ height: h }} />
+  </>
+);
+
 // A marca de cada produto: as logos reais dos repositórios; quem não tem logo ganha um logotipo tipográfico.
 function Logo({ id, name }) {
   switch (id) {
-    case 'termolog': return <img src={L('termolog-claro.svg')} alt="TermoLOG" style={{ height: 64 }} />;
-    case 'vcall': return <img src={L('vcall.svg')} alt="Vcall" style={{ height: 58 }} />;
-    case 'duckv': return <img src={L('duckv.svg')} alt="duckV" style={{ height: 52 }} />;
+    case 'termolog': return <Par f="termolog-claro" alt="TermoLOG" h={64} />;
+    case 'vcall': return <Par f="vcall" alt="Vcall" h={58} />;
+    case 'duckv': return <Par f="duckv" alt="duckV" h={52} />;
     case 'songv': return <span className="logo-set" role="img" aria-label="SongV"><img src={L('songv-simbolo.png')} alt="" style={{ height: 52 }} /><span className="logo-word">Song<b style={{ color: '#ff7a1a' }}>V</b></span></span>;
     case 'farmacia': return (
-      <span className="logo-set" role="img" aria-label="PharmaVision e OrçaLink">
+      <span className="logo-set" role="img" aria-label={t('PharmaVision e OrçaLink')}>
         <img src={L('pharmavision-icone.png')} alt="" style={{ height: 46 }} /><span className="logo-word">PharmaVision</span>
         <span className="logo-plus" aria-hidden>+</span>
         <img src={L('orcalink.svg')} alt="" style={{ height: 48 }} /><span className="logo-word">OrçaLink</span>
@@ -47,7 +56,7 @@ function Logo({ id, name }) {
     );
     case 'voto': return <span className="logo-set" role="img" aria-label="Voto Aberto"><img src={L('voto.svg')} alt="" style={{ height: 52 }} /><span className="logo-word">Voto Aberto</span></span>;
     case 'esmartigado': return <img src={L('esmartigado.png')} alt="Esmartigado" style={{ height: 130, margin: "-18px 0 -14px" }} />;
-    case 'via': return <img src={L('via.svg')} alt="VIA" style={{ height: 72 }} />;
+    case 'via': return <Par f="via" alt="VIA" h={72} />;
     case 'quizzv': return <span className="logo-set" role="img" aria-label="QuizzV"><img src={L('quizzv.svg')} alt="" style={{ height: 56 }} /><span className="logo-word">Quizz<b style={{ color: '#F86B23' }}>V</b></span></span>;
     default: return <span className="logo-word big">{name}</span>;
   }
@@ -116,15 +125,15 @@ export function Look({ s, i }) {
           <p className="look-meta">{s.team}<span>{s.stack.slice(0, 5).join('  /  ')}</span></p>
           {links.length > 0 && (
             <p className="look-links">
-              Divide tecnologia com{' '}
+              {t('Divide tecnologia com')}{' '}
               {links.map(({ o, why }, j) => (
-                <span key={o.id}><a href={`#${o.id}`} title={why} style={{ '--lc': o.color }}>{o.name}</a>{j < links.length - 2 ? ', ' : j === links.length - 2 ? ' e ' : '.'}</span>
+                <span key={o.id}><a href={`#${o.id}`} title={why} style={{ '--lc': o.color }}>{o.name}</a>{j < links.length - 2 ? ', ' : j === links.length - 2 ? t(' e ') : '.'}</span>
               ))}
             </p>
           )}
           <div className="look-actions">
-            <button className="cta" onClick={() => ui.set({ dossier: s.id })}>Estudo de caso</button>
-            {videos.some((v) => v.id === s.id) && <button className="txt-link" onClick={() => ui.set({ video: s.id })}><Play size={15} aria-hidden /> Assistir ao vídeo</button>}
+            <button className="cta" onClick={() => ui.set({ dossier: s.id })}>{t('Estudo de caso')}</button>
+            {videos.some((v) => v.id === s.id) && <button className="txt-link" onClick={() => ui.set({ video: s.id })}><Play size={15} aria-hidden /> {t('Assistir ao vídeo')}</button>}
             {code && <a className="txt-link" href={code.href} target="_blank" rel="noreferrer">{code.label}<ArrowUpRight size={16} aria-hidden /></a>}
             {s.private && <span className="look-private"><Lock size={14} aria-hidden /> {s.private}</span>}
           </div>
@@ -132,12 +141,12 @@ export function Look({ s, i }) {
 
         {qz ? (
           <figure className="look-frame">
-            <button className="look-stage" onClick={() => ui.set({ lightbox: { list: s.shots, i: 0 } })} aria-label="Ampliar as telas do QuizzV">
+            <button className="look-stage" onClick={() => ui.set({ lightbox: { list: s.shots, i: 0 } })} aria-label={t('Ampliar as telas do QuizzV')}>
               <ColorPhones cores={quizzvCores} c={ci} extra={s.shots.filter((x) => /opcoes|resultado|gerador|vcall/.test(x.src))} k={k} />
             </button>
             <figcaption className="look-callout qz-callout">
-              <span className="look-cap">Cor de destaque: <b>{cor.name}</b>. O app deixa escolher entre seis.</span>
-              <span className="qz-swatches" role="radiogroup" aria-label="Cor de destaque do QuizzV">
+              <span className="look-cap">{t('Cor de destaque:')} <b>{cor.name}</b>. {t('O app deixa escolher entre seis.')}</span>
+              <span className="qz-swatches" role="radiogroup" aria-label={t('Cor de destaque do QuizzV')}>
                 {quizzvCores.map((c2, j) => (
                   <button key={c2.id} type="button" role="radio" aria-checked={j === ci} aria-label={c2.name} title={c2.name} style={{ '--sw': c2.hex }} onClick={() => setPick(j)} />
                 ))}
@@ -146,7 +155,7 @@ export function Look({ s, i }) {
           </figure>
         ) : (
         <figure className="look-frame">
-            <button className="look-stage" onClick={() => ui.set({ lightbox: { list: s.shots, i: Math.max(0, s.shots.indexOf(shots[k])) } })} aria-label={`Ampliar: ${shots[k]?.alt}`}>
+            <button className="look-stage" onClick={() => ui.set({ lightbox: { list: s.shots, i: Math.max(0, s.shots.indexOf(shots[k])) } })} aria-label={`${t('Ampliar')}: ${shots[k]?.alt}`}>
               <Showcase shots={s.shots} k={k} render={false} />
             </button>
             {shots[k] && (

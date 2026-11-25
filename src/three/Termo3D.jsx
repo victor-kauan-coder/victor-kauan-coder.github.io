@@ -3,6 +3,7 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import { initLoaders, useModel } from './loaders.js';
 import { termo, fmtC } from '../termo.js';
+import { t as tr3 } from '../i18n.js';
 
 // O único momento 3D do site: o nó do TermoLOG montado numa placa de verdade.
 // Peças reais (biblioteca 3D do KiCad) sobre uma placa com trilhas de cobre ligando cada uma;
@@ -54,7 +55,7 @@ function useBoardTextures() {
     // furos de fixação e serigrafia
     [[-7.2, -5.4], [8, -5.4], [-7.2, 5.8], [8, 5.8]].forEach(([x, z]) => { const [px, py] = toCanvas(x, z, W, H); c.fillStyle = '#c99a5b'; c.beginPath(); c.arc(px, py, 28, 0, 7); c.fill(); c.fillStyle = '#05100c'; c.beginPath(); c.arc(px, py, 18, 0, 7); c.fill(); });
     c.fillStyle = 'rgba(235, 240, 230, 0.85)'; c.font = '600 30px ui-monospace, monospace';
-    [['U1  ESP32-WROOM-32', -2.4, 4.6], ['LCD1  16x2', -4.6, -4.6], ['R1', 2.6, 3.5], ['Y1', 3.6, 1.2], ['D1', 4.9, -1.6], ['TermoLOG  no de borda  rev 2', -6.9, 5.4]].forEach(([t, x, z]) => { const [px, py] = toCanvas(x, z, W, H); c.fillText(t, px, py); });
+    [['U1  ESP32-WROOM-32', -2.4, 4.6], ['LCD1  16x2', -4.6, -4.6], ['R1', 2.6, 3.5], ['Y1', 3.6, 1.2], ['D1', 4.9, -1.6], [tr3('TermoLOG  no de borda  rev 2'), -6.9, 5.4]].forEach(([t, x, z]) => { const [px, py] = toCanvas(x, z, W, H); c.fillText(t, px, py); });
     c.strokeStyle = 'rgba(235, 240, 230, 0.6)'; c.lineWidth = 4; c.strokeRect(...toCanvas(-7.6, -5.8, W, H), (15.9 / BOARD.w) * W, (11.8 / BOARD.d) * H);
     const map = new THREE.CanvasTexture(color); map.colorSpace = THREE.SRGBColorSpace; map.anisotropy = 8;
     const metalnessMap = new THREE.CanvasTexture(metal);
@@ -74,7 +75,7 @@ function useLcdTexture() {
       c.fillStyle = s.alert ? '#f08a3c' : '#9fd14a'; c.fillRect(0, 0, 512, 128);
       c.fillStyle = 'rgba(0,0,0,0.08)'; for (let x = 0; x < 512; x += 32) c.fillRect(x, 0, 2, 128);
       c.fillStyle = '#16210b'; c.font = '700 44px ui-monospace, monospace';
-      c.fillText(`SALA 204 ${s.alert ? 'ALERTA' : 'OK'}`, 18, 54);
+      c.fillText(`${tr3('SALA')} 204 ${s.alert ? tr3('ALERTA') : 'OK'}`, 18, 54);
       c.fillText(`${fmtC(s.temp)}C  ${Math.round(s.hum)}%UR`, 18, 106);
       tex.needsUpdate = true;
     };

@@ -1,4 +1,5 @@
 import galleries from './galleries.json';
+import { traduzir } from '../i18n.js';
 
 const base = import.meta.env.BASE_URL;
 const gal = (id) => galleries[id].map((g) => ({ ...g, src: base + g.src, thumb: base + g.thumb }));
@@ -60,7 +61,7 @@ const CASE = {
   },
 };
 
-export const stations = [
+export const stations = traduzir([
   {
     id: 'via',
     name: 'VIA',
@@ -287,9 +288,9 @@ export const stations = [
     stack: ['SwiftUI', 'MapKit', 'ESP32', 'Node-RED'],
     links: [{ label: 'Código', href: 'https://github.com/victor-kauan-coder/Esmartigado' }],
   },
-].map((s) => ({ ...s, ...CASE[s.id], shots: galleries[s.id] ? gal(s.id) : [] }));
+].map((s) => ({ ...s, ...CASE[s.id], shots: galleries[s.id] ? gal(s.id) : [] })));
 
-export const archive = [
+export const archive = traduzir([
   {
     name: 'PET Saúde Digital',
     text: 'PWA para a Fundação Municipal de Saúde acompanhar turmas e participantes, offline, com sincronização no Firebase, Google Drive e relatórios em PDF. E o sistema de prontuários do CAPS em Flask com JWT, bcrypt e RBAC.',
@@ -329,7 +330,7 @@ export const archive = [
     stack: ['Python'],
     href: 'https://github.com/victor-kauan-coder/dashboard-relatorios',
   },
-];
+]);
 
 export const contact = {
   github: 'https://github.com/victor-kauan-coder',
@@ -340,7 +341,7 @@ export const contact = {
 };
 
 // Ligações entre projetos: viram as trilhas de cobre da bancada. Só tecnologia que os dois usam de verdade.
-export const LINKS = [
+export const LINKS = traduzir([
   ['termolog', 'esmartigado', 'ESP32 em campo mandando leitura para um app'],
   ['termolog', 'farmacia', 'API em FastAPI lendo e entregando dados'],
   ['termolog', 'voto', 'PostgreSQL e testes visuais com Playwright'],
@@ -352,24 +353,24 @@ export const LINKS = [
   ['via', 'duckv', 'Claude Code comandado por um servidor em Node'],
   ['quizzv', 'vcall', 'O quiz roda dentro de uma chamada do Vcall'],
   ['quizzv', 'duckv', 'Apps para Android'],
-];
+]);
 
 // As seis cores de destaque que o QuizzV deixa escolher nas configurações (capturadas no app, tema escuro).
 const qz = (id) => ({ home: `${base}projetos/quizzv/cor-${id}-biblioteca-m.webp`, quiz: `${base}projetos/quizzv/cor-${id}-questao-m.webp` });
-export const quizzvCores = [
+export const quizzvCores = traduzir([
   { id: 'orange', name: 'Sunset', hex: '#F97316', ...qz('orange') },
   { id: 'navy', name: 'Marinho', hex: '#1E3A8A', ...qz('navy') },
   { id: 'cobalt', name: 'Cobalto', hex: '#2563EB', ...qz('cobalt') },
   { id: 'pink', name: 'Rosa', hex: '#EC4899', ...qz('pink') },
   { id: 'emerald', name: 'Esmeralda', hex: '#10B981', ...qz('emerald') },
   { id: 'violet', name: 'Violeta', hex: '#8B5CF6', ...qz('violet') },
-];
+]);
 
 // Vídeos dos projetos (peças de divulgação, tour e tutorial feitos para cada um), na ordem da fila.
 const vid = (f) => ({ src: `${base}videos/${f}.mp4`, poster: `${base}videos/${f}.jpg` });
-export const videos = [
+export const videos = traduzir([
   { id: 'vcall', title: 'Vcall', kind: 'Apresentação', dur: '1:28', ...vid('vcall') },
   { id: 'songv', title: 'SongV', kind: 'Apresentação', dur: '1:50', ...vid('songv') },
   { id: 'duckv', title: 'duckV', kind: 'Apresentação', dur: '1:01', ...vid('duckv') },
   { id: 'farmacia', title: 'PharmaVision', kind: 'Apresentação, dados fictícios', dur: '1:18', ...vid('pharmavision') },
-];
+]);

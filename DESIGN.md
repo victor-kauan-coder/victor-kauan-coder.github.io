@@ -2,6 +2,11 @@
 
 Lookbook escuro: cada projeto é apresentado como uma campanha de produto, com a marca real, as telas reais dentro de aparelhos e animação ligada à rolagem.
 
+## Tema e idioma
+
+- Escuro é o padrão; o botão no topo troca para o claro (papel e tinta, mesmos nomes de token) e a escolha fica salva. Logos com texto claro têm uma versão `-tinta.svg`.
+- Português e inglês em `src/i18n.js`: o texto em português é a chave. Sem escolha salva, vale o idioma do navegador. Texto novo precisa de entrada no dicionário. Capturas, vídeos e currículo continuam em português.
+
 ## Cores
 
 | Token | Valor | Uso |

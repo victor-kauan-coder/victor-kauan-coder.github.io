@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Play } from 'lucide-react';
 import { videos, stations } from '../data/projects.js';
 import { ui, useStore } from '../store.js';
+import { t } from '../i18n.js';
 
 // Sala de vídeos no fim da página: o player grande e a fila ao lado; ao terminar, entra o próximo.
 // Um botão "Assistir" num projeto abre esta sala já no vídeo dele.
@@ -28,16 +29,16 @@ export function VideoRoom() {
   const color = stations.find((s) => s.id === cur.id)?.color;
   return (
     <section className="videos" id="videos" ref={sec} aria-labelledby="t-videos" style={{ '--pc': color }}>
-      <h2 id="t-videos" className="section-title">Em vídeo</h2>
+      <h2 id="t-videos" className="section-title">{t('Em vídeo')}</h2>
       <div className="videos-grid">
         <figure className="videos-player">
           <video ref={ref} poster={cur.poster} controls playsInline preload="none" onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)}
             onEnded={() => { setPlaying(true); setI((x) => (x + 1) % videos.length); }}>
             <source src={cur.src} type="video/mp4" />
           </video>
-          <figcaption><strong>{cur.title}</strong><span>{cur.kind}</span><a href={`#${cur.id}`}>Ver o projeto</a></figcaption>
+          <figcaption><strong>{cur.title}</strong><span>{cur.kind}</span><a href={`#${cur.id}`}>{t('Ver o projeto')}</a></figcaption>
         </figure>
-        <ol className="videos-queue" aria-label="Fila de vídeos">
+        <ol className="videos-queue" aria-label={t('Fila de vídeos')}>
           {videos.map((v, j) => (
             <li key={v.id}>
               <button type="button" className={j === i ? 'on' : ''} aria-current={j === i ? 'true' : undefined}

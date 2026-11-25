@@ -1,4 +1,5 @@
 import { createStore } from './store.js';
+import { t, lang } from './i18n.js';
 
 // Simulação do TermoLOG: o ESP32 lê a sala a cada 1,2 s, a API grava, o painel decide o alerta.
 // Mesma regra do projeto: alerta quando a leitura sai da faixa por 3 leituras seguidas.
@@ -18,7 +19,7 @@ export const termo = createStore({
 });
 
 let timer = null;
-const fmt = (n) => n.toFixed(1).replace('.', ',');
+const fmt = (n) => (lang === 'en' ? n.toFixed(1) : n.toFixed(1).replace('.', ','));
 const clock = () => new Date().toLocaleTimeString('pt-BR', { hour12: false });
 
 function step() {
@@ -28,9 +29,9 @@ function step() {
   const out = temp > s.max || temp < s.min;
   const outCount = out ? s.outCount + 1 : 0;
   const alert = outCount >= 3 ? true : out ? s.alert : false;
-  const lines = [`${clock()}  ESP32 sala-204  POST /leituras  ${fmt(temp)} °C  ${Math.round(hum)}%`, `${clock()}  API  201 Created  leitura #${s.seq + 1} gravada`];
-  if (alert && !s.alert) { lines.push(`${clock()}  ALERTA  sala-204 fora da faixa (${fmt(temp)} °C > ${s.max} °C)`); }
-  if (!alert && s.alert) lines.push(`${clock()}  OK  sala-204 voltou para a faixa`);
+  const lines = [`${clock()}  ESP32 ${t('sala-204')}  ${t('POST /leituras')}  ${fmt(temp)} °C  ${Math.round(hum)}%`, `${clock()}  API  201 Created  ${t('leitura')} #${s.seq + 1} ${t('gravada')}`];
+  if (alert && !s.alert) { lines.push(`${clock()}  ${t('ALERTA')}  ${t('sala-204')} ${t('fora da faixa')} (${fmt(temp)} °C > ${s.max} °C)`); }
+  if (!alert && s.alert) lines.push(`${clock()}  OK  ${t('sala-204')} ${t('voltou para a faixa')}`);
   termo.set({ temp, hum, outCount, alert, history: [...s.history.slice(1), temp], log: [...lines.reverse(), ...s.log].slice(0, 14), seq: s.seq + 1 });
 }
 

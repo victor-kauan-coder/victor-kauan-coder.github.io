@@ -3,6 +3,7 @@ import { Snowflake, Sun } from 'lucide-react';
 import { useSectionProgress } from './Look.jsx';
 import { useStore } from '../store.js';
 import { termo, fmtC } from '../termo.js';
+import { t, traduzir } from '../i18n.js';
 
 const Termo3D = lazy(() => import('../three/Termo3D.jsx'));
 
@@ -13,25 +14,25 @@ class Safe extends Component {
 }
 
 // Como uma leitura vira alerta, contado em quatro passos presos à rolagem.
-const STEPS = [
+const STEPS = traduzir([
   ['O ESP32 lê a sala.', 'Um DHT22 mede temperatura e umidade e o nó de borda manda a leitura pelo rádio LoRa.'],
   ['A API guarda a leitura.', 'O nó central envia por HTTPS com chave de API; o FastAPI grava no PostgreSQL, sem duplicar lote reenviado.'],
   ['O painel compara com a faixa.', 'Cada sala tem sua faixa ideal. A pior aparece primeiro, com o quanto falta para o limite.'],
   ['Três leituras fora: alerta.', 'O alerta só some quando alguém reconhece e registra o que fez. O aviso também sai por e-mail.'],
-];
+]);
 
 function Readout() {
   const s = useStore(termo);
   return (
     <div className={`readout ${s.alert ? 'hot' : ''}`}>
       <p className="readout-num" aria-live="polite">{fmtC(s.temp)}<span> °C</span></p>
-      <p className="readout-state">Sala 204, {s.alert ? 'em alerta' : s.outCount ? `fora da faixa (${s.outCount} de 3)` : 'na faixa'}</p>
+      <p className="readout-state">{t('Sala 204,')} {s.alert ? t('em alerta') : s.outCount ? `${t('fora da faixa')} (${s.outCount} ${t('de')} 3)` : t('na faixa')}</p>
       <label className="readout-range">
         <Snowflake size={15} aria-hidden />
-        <input type="range" min="16" max="38" step="0.5" value={s.ambient} onChange={(e) => termo.set({ ambient: +e.target.value })} aria-label="Temperatura do ambiente da sala 204" />
+        <input type="range" min="16" max="38" step="0.5" value={s.ambient} onChange={(e) => termo.set({ ambient: +e.target.value })} aria-label={t('Temperatura do ambiente da sala 204')} />
         <Sun size={15} aria-hidden />
       </label>
-      <p className="readout-hint">Simulação ao vivo: arraste para esquentar a sala.</p>
+      <p className="readout-hint">{t('Simulação ao vivo: arraste para esquentar a sala.')}</p>
     </div>
   );
 }
@@ -57,10 +58,10 @@ export function Moment() {
     return () => { clearTimeout(t); io.disconnect(); io2.disconnect(); };
   }, []);
   return (
-    <section className="moment" ref={ref} aria-label="Como o TermoLOG transforma uma leitura em alerta">
+    <section className="moment" ref={ref} aria-label={t('Como o TermoLOG transforma uma leitura em alerta')}>
       <div className="moment-pin">
         <div className="moment-copy">
-          <h2 className="moment-title">Da parede ao alerta</h2>
+          <h2 className="moment-title">{t('Da parede ao alerta')}</h2>
           <ol className="moment-steps">
             {STEPS.map(([h, p], i) => (
               <li key={h} className={i === step ? 'on' : i < step ? 'done' : ''} aria-current={i === step ? 'step' : undefined}>

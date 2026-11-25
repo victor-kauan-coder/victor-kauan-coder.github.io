@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { X, ExternalLink, Lock, Play, Pause, ChevronLeft, ChevronRight } from 'lucide-react';
 import { stations } from '../data/projects.js';
 import { ui, useStore } from '../store.js';
+import { t } from '../i18n.js';
 import { WIDGET } from './Widgets.jsx';
 
 // Demonstração: as telas reais do projeto passando como um vídeo, com legenda e barra de progresso.
@@ -24,9 +25,9 @@ export function Tour({ shots, color }) {
         ))}
       </div>
       <div className="tour-bar">
-        <button onClick={() => setPlay((p) => !p)} aria-label={play ? 'Pausar' : 'Reproduzir'}>{play ? <Pause size={16} /> : <Play size={16} />}</button>
-        <button onClick={() => setI((i - 1 + shots.length) % shots.length)} aria-label="Tela anterior"><ChevronLeft size={16} /></button>
-        <button onClick={() => setI((i + 1) % shots.length)} aria-label="Próxima tela"><ChevronRight size={16} /></button>
+        <button onClick={() => setPlay((p) => !p)} aria-label={t(play ? 'Pausar' : 'Reproduzir')}>{play ? <Pause size={16} /> : <Play size={16} />}</button>
+        <button onClick={() => setI((i - 1 + shots.length) % shots.length)} aria-label={t('Tela anterior')}><ChevronLeft size={16} /></button>
+        <button onClick={() => setI((i + 1) % shots.length)} aria-label={t('Próxima tela')}><ChevronRight size={16} /></button>
         <p className="tour-cap"><strong>{i + 1}/{shots.length}</strong> {cur.alt}</p>
       </div>
       <div className="tour-steps">{shots.map((s, k) => <span key={s.src} className={k < i ? 'done' : k === i ? (play ? 'run' : 'done') : ''} />)}</div>
@@ -43,7 +44,7 @@ export function FlowArch({ nodes, color }) {
   );
 }
 
-const TABS = [['geral', 'Visão geral'], ['demo', 'Demonstração'], ['arq', 'Arquitetura'], ['telas', 'Telas'], ['papel', 'Meu papel']];
+const TABS = [['geral', t('Visão geral')], ['demo', t('Demonstração')], ['arq', t('Arquitetura')], ['telas', t('Telas')], ['papel', t('Meu papel')]];
 
 export function CaseStudy() {
   const id = useStore(ui, (s) => s.dossier);
@@ -61,9 +62,9 @@ export function CaseStudy() {
   if (!s) return null;
   const Live = WIDGET[s.id];
   return (
-    <div className="sheet case-sheet" role="dialog" aria-modal="true" aria-label={`Estudo de caso: ${s.name}`} onClick={close}>
+    <div className="sheet case-sheet" role="dialog" aria-modal="true" aria-label={`${t('Estudo de caso')}: ${s.name}`} onClick={close}>
       <article className="case" style={{ '--c': s.color }} onClick={(e) => e.stopPropagation()} tabIndex={-1} ref={ref}>
-        <button className="close" onClick={close} aria-label="Fechar"><X /></button>
+        <button className="close" onClick={close} aria-label={t('Fechar')}><X /></button>
         <header className="case-head">
           <div>
             <p className="team">{s.team}</p>
@@ -81,9 +82,9 @@ export function CaseStudy() {
         {tab === 'geral' && (
           <section className="case-grid">
             <div>
-              <h3>O problema</h3><p>{s.problem}</p>
-              <h3>A solução</h3><p>{s.solution}</p>
-              <h3>O que faz</h3>
+              <h3>{t('O problema')}</h3><p>{s.problem}</p>
+              <h3>{t('A solução')}</h3><p>{s.solution}</p>
+              <h3>{t('O que faz')}</h3>
               <ul className="features">{s.features.map((f) => <li key={f}>{f}</li>)}</ul>
             </div>
             <Tour shots={s.shots} color={s.color} />
@@ -91,7 +92,7 @@ export function CaseStudy() {
         )}
         {tab === 'demo' && (
           <section className="case-demo">
-            {Live && <div className="live"><h3>Ao vivo</h3><Live /></div>}
+            {Live && <div className="live"><h3>{t('Ao vivo')}</h3><Live /></div>}
             <Tour shots={s.shots} color={s.color} />
           </section>
         )}
@@ -108,7 +109,7 @@ export function CaseStudy() {
             <div className="gallery">
               {s.shots.map((sh, k) => (
                 <figure key={sh.src} className={sh.tall ? 'tall' : ''}>
-                  <button onClick={() => ui.set({ lightbox: { list: s.shots, i: k } })} aria-label={`Ampliar: ${sh.alt}`}><img src={sh.thumb} alt={sh.alt} loading="lazy" /></button>
+                  <button onClick={() => ui.set({ lightbox: { list: s.shots, i: k } })} aria-label={`${t('Ampliar')}: ${sh.alt}`}><img src={sh.thumb} alt={sh.alt} loading="lazy" /></button>
                   <figcaption>{sh.alt}</figcaption>
                 </figure>
               ))}
@@ -117,8 +118,8 @@ export function CaseStudy() {
         )}
         {tab === 'papel' && (
           <section className="case-grid">
-            <div><h3>O que eu fiz</h3><p>{s.role}</p></div>
-            <div><h3>Desafios resolvidos</h3><ul className="features">{s.challenges.map((f) => <li key={f}>{f}</li>)}</ul></div>
+            <div><h3>{t('O que eu fiz')}</h3><p>{s.role}</p></div>
+            <div><h3>{t('Desafios resolvidos')}</h3><ul className="features">{s.challenges.map((f) => <li key={f}>{f}</li>)}</ul></div>
           </section>
         )}
         <footer className="links">

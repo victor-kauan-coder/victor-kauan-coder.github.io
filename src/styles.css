@@ -9,6 +9,9 @@
   --rule: rgba(242, 239, 232, 0.14);
   --rule-2: rgba(242, 239, 232, 0.26);
   --ember: #f0643c;
+  --bone-hover: #fff;
+  --moment-glow: #17130f;
+  --done: #77746d;
   --display: 'Archivo Variable', 'Arial Narrow', sans-serif;
   --body: 'Geist Variable', system-ui, sans-serif;
   --mono: 'Geist Mono', ui-monospace, monospace;
@@ -36,7 +39,7 @@ h1, h2, h3, p { margin: 0; }
 
 /* ---------- Controles ---------- */
 .cta { display: inline-flex; align-items: center; gap: 10px; height: 52px; padding: 0 26px; background: var(--bone); color: var(--ink); border: 0; border-radius: 0; font: 600 14px var(--body); letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; white-space: nowrap; transition: background 0.3s var(--ease), transform 0.3s var(--ease); }
-.cta:hover { background: #fff; }
+.cta:hover { background: var(--bone-hover); }
 .cta:active { transform: translateY(1px); }
 .txt-link { display: inline-flex; align-items: center; gap: 6px; padding: 6px 0; font: 600 14px var(--body); letter-spacing: 0.08em; text-transform: uppercase; background: linear-gradient(var(--bone), var(--bone)) 0 100% / 100% 1px no-repeat; transition: background-size 0.4s var(--ease); }
 .txt-link:hover { background-size: 0 1px; background-position: 100% 100%; }
@@ -180,7 +183,7 @@ h1, h2, h3, p { margin: 0; }
 }
 
 /* ---------- Momento 3D (TermoLOG) ---------- */
-.moment { position: relative; height: 340dvh; background: radial-gradient(70% 60% at 70% 55%, #17130f, var(--ink) 70%); }
+.moment { position: relative; height: 340dvh; background: radial-gradient(70% 60% at 70% 55%, var(--moment-glow), var(--ink) 70%); }
 .moment-pin { position: sticky; top: 0; height: 100dvh; display: grid; grid-template-columns: minmax(320px, 0.8fr) 1.2fr; gap: clamp(24px, 4vw, 72px); padding: 104px var(--gut) 48px; }
 .moment-copy { display: flex; flex-direction: column; gap: 28px; min-height: 0; }
 .moment-title { font: 800 clamp(3rem, 6vw, 6rem)/0.84 var(--display); font-stretch: 62%; text-transform: uppercase; }
@@ -190,7 +193,7 @@ h1, h2, h3, p { margin: 0; }
 .moment-steps p { max-height: 0; overflow: hidden; font-size: 15px; transition: max-height 0.6s var(--ease), opacity 0.5s, margin 0.6s var(--ease); opacity: 0; max-width: 46ch; }
 .moment-steps li.on { color: var(--bone); }
 .moment-steps li.on p { max-height: 7em; opacity: 1; margin-top: 6px; color: var(--stone); }
-.moment-steps li.done h3 { color: #77746d; }
+.moment-steps li.done h3 { color: var(--done); }
 .moment-stage { position: relative; min-height: 0; }
 .moment-canvas { position: absolute !important; inset: 0; }
 .readout { margin-top: auto; display: grid; gap: 6px; }
@@ -201,7 +204,7 @@ h1, h2, h3, p { margin: 0; }
 .readout.hot .readout-state { color: var(--ember); }
 .readout-range { display: flex; align-items: center; gap: 12px; color: var(--stone); max-width: 360px; margin-top: 8px; }
 .readout-range input { flex: 1; accent-color: var(--bone); }
-.readout-hint { font-size: 13px; color: #8c8981; }
+.readout-hint { font-size: 13px; color: var(--dim); }
 
 /* ---------- Arquivo ---------- */
 .section-title { font: 800 clamp(3.4rem, 8vw, 8rem)/0.84 var(--display); font-stretch: 62%; text-transform: uppercase; margin-bottom: clamp(32px, 6vh, 64px); }
@@ -231,7 +234,7 @@ h1, h2, h3, p { margin: 0; }
 .contact-links a { display: flex; justify-content: space-between; align-items: center; padding: 22px 18px; font: 600 14px var(--body); letter-spacing: 0.1em; text-transform: uppercase; transition: background 0.3s; }
 .contact-links li:first-child a { padding-left: 0; }
 .contact-links a:hover { background: var(--ink-2); }
-.credits { margin-top: 96px; color: #8c8981; font-size: 13px; }
+.credits { margin-top: 96px; color: var(--dim); font-size: 13px; }
 
 /* ---------- Revelações ligadas à rolagem (cortina e subida) ---------- */
 @supports (animation-timeline: view()) {
@@ -490,3 +493,29 @@ button.txt-link { border: 0; background-color: transparent; color: var(--bone); 
   .look-frame { width: 100%; align-self: stretch; flex: none; }
   .look-callout, .qz-callout { max-width: 100%; left: 0; right: 0; }
 }
+
+/* ---------- Botões de idioma e tema ---------- */
+.nav-end { justify-self: end; display: flex; align-items: center; gap: 8px; }
+.nav-end .nav-cv { margin-left: 14px; }
+.pref { width: 36px; height: 36px; display: grid; place-items: center; padding: 0; background: transparent; border: 1px solid var(--rule-2); cursor: pointer; font: 600 12px var(--body); letter-spacing: 0.06em; transition: background 0.3s; }
+.pref:hover { background: var(--ink-3); }
+@media (max-width: 420px) { .nav-end .nav-cv { margin-left: 4px; } .nav-cv span { display: none; } }
+
+/* ---------- Tema claro: papel no fundo, tinta no texto. Os nomes dos tokens continuam os mesmos. ---------- */
+:root[data-tema='claro'] {
+  --ink: #f4f1ea; --ink-2: #eae6dc; --ink-3: #e0dbcf;
+  --bone: #161513; --bone-hover: #000; --stone: #524f48;
+  --rule: rgba(22, 21, 19, 0.14); --rule-2: rgba(22, 21, 19, 0.3);
+  --ember: #c4451f; --dim: #625f57; --done: #8a867d; --moment-glow: #e8e2d4;
+  --surface-3: #dfdacd; --scrim: rgba(244, 241, 234, 0.94); --on-accent: #0b0b0a;
+  color-scheme: light;
+}
+[data-tema='claro'] { scrollbar-color: #b9b4a8 var(--ink); }
+[data-tema='claro'] .show::before { box-shadow: 0 60px 120px -70px rgba(40, 30, 20, 0.55); }
+[data-tema='claro'] .hero-stage .show::before { background: linear-gradient(150deg, #ecd5c8, #e6ddd2 75%); }
+/* cores de marca claras demais para texto no papel */
+[data-tema='claro'] .case h3, [data-tema='claro'] .team, [data-tema='claro'] .qz-callout b, [data-tema='claro'] .logo-word.big { color: color-mix(in srgb, var(--c, var(--pc)) 55%, #000); }
+[data-tema='claro'] .case h3, [data-tema='claro'] .team { color: color-mix(in srgb, var(--c) 55%, #000); }
+
+img.so-claro, :root[data-tema='claro'] img.so-escuro { display: none !important; }
+:root[data-tema='claro'] img.so-claro { display: block !important; }
