@@ -10,6 +10,7 @@ import { Laptop } from './ui/Devices.jsx';
 import { VideoRoom } from './ui/Videos.jsx';
 import { startTermo } from './termo.js';
 import { t } from './i18n.js';
+import { revelarNoCelular } from './movel.js';
 import { siWhatsapp, siLinkedin, siGithub } from 'simple-icons';
 
 // Marcas oficiais das redes (pacote simple-icons), desenhadas na cor do texto.
@@ -76,6 +77,7 @@ function Archive() {
 
 export default function App() {
   useEffect(() => { startTermo(); }, []);
+  useEffect(revelarNoCelular, []);
   return (
     <>
       <a className="skip" href="#projetos">{t('Pular para os projetos')}</a>
@@ -112,7 +114,7 @@ export default function App() {
           <h2 id="t-sobre" className="sr-only">{t('Sobre mim')}</h2>
           <p className="statement">{STATEMENT.split(' ').map((w, i) => <span key={i}>{w} </span>)}</p>
           <div className="about-grid">
-            <img className="about-photo" src="https://github.com/victor-kauan-coder.png" alt={t('Foto de Victor Kauan')} width="460" height="460" loading="lazy" />
+            <img className="about-photo" src="https://github.com/victor-kauan-coder.png?size=460" alt={t('Foto de Victor Kauan')} width="460" height="460" loading="lazy" />
             <dl className="about-facts">
               <div><dt>UFPI</dt><dd>{t('Ciência da Computação, 2024 a 2028. Monitor de Arquitetura de Computadores, Estrutura de Dados, Projeto e Análise de Algoritmos e Teoria da Computação.')}</dd></div>
               <div><dt>CESLA</dt><dd>{t('Pesquisa em visão computacional desde 2025: API que lê formulários marcados (Python e OpenCV) e algoritmos de biometria digital em C++.')}</dd></div>

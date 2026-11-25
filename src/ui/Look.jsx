@@ -3,21 +3,21 @@ import { ArrowUpRight, Lock, Play } from 'lucide-react';
 import { stations, LINKS, quizzvCores, videos } from '../data/projects.js';
 import { ui } from '../store.js';
 import { t } from '../i18n.js';
+import { compacta as narrow } from '../movel.js';
 import { Showcase, splitShots, ColorPhones } from './Devices.jsx';
 
 // fração inicial da seção em que só a marca aparece, grande, antes do anúncio se montar
 const INTRO = 0.16;
-const narrow = () => matchMedia('(max-width: 860px)').matches;
 const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 const L = (f) => `${import.meta.env.BASE_URL}logos/${f}`;
 
 // Progresso da rolagem dentro de uma seção alta (0 ao entrar presa, 1 ao soltar).
 // Só calcula enquanto a seção está na tela; escreve --p direto no elemento, sem re-render.
-export function useSectionProgress(ref, cb) {
+export function useSectionProgress(ref, cb, ativo = true) {
   const cbRef = useRef(cb);
   cbRef.current = cb;
   useEffect(() => {
-    const el = ref.current; if (!el) return;
+    const el = ref.current; if (!el || !ativo) return;
     let raf = 0, on = false;
     const tick = () => {
       const r = el.getBoundingClientRect();
@@ -29,7 +29,7 @@ export function useSectionProgress(ref, cb) {
     const io = new IntersectionObserver(([e]) => { on = e.isIntersecting; cancelAnimationFrame(raf); if (on) raf = requestAnimationFrame(tick); });
     io.observe(el);
     return () => { io.disconnect(); cancelAnimationFrame(raf); };
-  }, [ref]);
+  }, [ref, ativo]);
 }
 
 // Logos com texto claro têm uma segunda versão em tinta para o tema claro; o CSS mostra só uma.
@@ -93,12 +93,17 @@ export function Look({ s, i }) {
     const q = Math.max(0, (p - INTRO) / (1 - INTRO));
     const n = Math.min(shots.length - 1, Math.floor(q * shots.length * 0.999));
     if (n !== kRef.current) { kRef.current = n; setK(n); }
-  });
+  }, !narrow());
   // No celular a seção não fica presa: as telas trocam sozinhas, devagar.
   useEffect(() => {
     if (!narrow() || reduced() || shots.length < 2) return;
-    const t = setInterval(() => setK((x) => (x + 1) % shots.length), 3800);
-    return () => clearInterval(t);
+    let timer = 0;
+    const io = new IntersectionObserver(([e]) => {
+      clearInterval(timer);
+      if (e.isIntersecting) timer = setInterval(() => setK((x) => (x + 1) % shots.length), 3200);
+    });
+    io.observe(ref.current);
+    return () => { io.disconnect(); clearInterval(timer); };
   }, [shots.length]);
 
   const links = LINKS.filter(([a, b]) => a === s.id || b === s.id).map(([a, b, why]) => ({ o: stations.find((x) => x.id === (a === s.id ? b : a)), why }));

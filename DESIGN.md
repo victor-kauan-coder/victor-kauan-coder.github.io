@@ -47,5 +47,8 @@ A cor de um projeto aparece só dentro do anúncio dele. O QuizzV troca `--pc` p
 
 ## Telas pequenas
 
-- Até 860px: seções deixam de ficar presas, a vitrine vem antes do texto e as telas trocam sozinhas.
-- Telas baixas (até 900px de altura) ou até 1200px de largura: anúncio compacto (menos itens, fonte menor) para nada sobrepor.
+- Até 860px de largura ou 540px de altura (celular, tablet em pé, celular deitado): nada fica preso à rolagem, cada projeto tem a altura do próprio conteúdo, as telas trocam sozinhas e os blocos entram ao aparecer (`src/movel.js` e `src/movel.css`, mesma condição nos dois).
+- Nunca deixar altura baseada em rolagem presa nesses tamanhos: vira tela preta.
+- A cena 3D só carrega no celular quando a pessoa chega perto.
+- Computador baixo (até 900px de altura) ou estreito (até 1200px): anúncio compacto (menos itens, fonte menor) para nada sobrepor.
+- Com "reduzir movimento" ligado no aparelho, as animações ficam desligadas.

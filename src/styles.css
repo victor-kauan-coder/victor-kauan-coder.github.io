@@ -453,7 +453,7 @@ img.long.on { animation: pagescroll var(--scroll, 8s) ease-in-out 1.2s infinite 
 /* ---------- Correções de sobreposição em telas menores (1024 x 768 e afins) ---------- */
 button.txt-link { border: 0; background-color: transparent; color: var(--bone); cursor: pointer; font: 600 14px var(--body); letter-spacing: 0.08em; text-transform: uppercase; }
 .look-actions { gap: 14px 24px; }
-@media (min-width: 861px) and (max-height: 900px), (min-width: 861px) and (max-width: 1200px) {
+@media (min-width: 861px) and (min-height: 541px) and (max-height: 900px), (min-width: 861px) and (min-height: 541px) and (max-width: 1200px) {
   .look-pin { padding-top: 84px; padding-bottom: 28px; gap: clamp(20px, 3vw, 48px); }
   .look-text { gap: 12px; align-content: center; max-height: calc(100dvh - 112px); }
   .look-logo { min-height: 0; }
@@ -472,11 +472,11 @@ button.txt-link { border: 0; background-color: transparent; color: var(--bone); 
   .look-callout { max-width: min(380px, 80%); padding: 12px 16px 14px; }
   .look-cap { font-size: 14px; }
 }
-@media (min-width: 861px) and (max-height: 720px) {
+@media (min-width: 861px) and (min-height: 541px) and (max-height: 720px) {
   .look-body { display: none; }
   .look-links { display: none; }
 }
-@media (min-width: 861px) and (max-width: 1200px) {
+@media (min-width: 861px) and (min-height: 541px) and (max-width: 1200px) {
   .look-pin { grid-template-columns: 1fr 1.05fr; }
   .look-left .look-pin { grid-template-columns: 1.05fr 1fr; }
   .hero-name { font-size: clamp(5rem, 13vw, 12rem); }

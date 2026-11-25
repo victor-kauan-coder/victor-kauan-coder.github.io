@@ -4,6 +4,7 @@ import { useSectionProgress } from './Look.jsx';
 import { useStore } from '../store.js';
 import { termo, fmtC } from '../termo.js';
 import { t, traduzir } from '../i18n.js';
+import { compacta } from '../movel.js';
 
 const Termo3D = lazy(() => import('../three/Termo3D.jsx'));
 
@@ -51,8 +52,9 @@ export function Moment() {
   useEffect(() => {
     // prepara a cena 3D com o navegador ocioso (logo depois da abertura), não no meio da rolagem
     const idle = window.requestIdleCallback || ((f) => setTimeout(f, 1500));
-    const t = setTimeout(() => idle(() => setNear(true), { timeout: 4000 }), 1800);
-    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) setNear(true); }, { rootMargin: '1600px 0px' });
+    // no celular não adianta: a cena (a parte mais pesada do site) só carrega quando a pessoa chega perto
+    const t = compacta() ? 0 : setTimeout(() => idle(() => setNear(true), { timeout: 4000 }), 1800);
+    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) setNear(true); }, { rootMargin: compacta() ? '700px 0px' : '1600px 0px' });
     const io2 = new IntersectionObserver(([e]) => setVisible(e.isIntersecting));
     io.observe(ref.current); io2.observe(ref.current);
     return () => { clearTimeout(t); io.disconnect(); io2.disconnect(); };
