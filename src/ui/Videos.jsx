@@ -17,7 +17,11 @@ export function VideoRoom() {
   useEffect(() => {
     if (!want) return;
     const j = videos.findIndex((v) => v.id === want);
-    if (j >= 0) { setI(j); setPlaying(true); sec.current?.scrollIntoView({ behavior: 'smooth' }); }
+    if (j >= 0) {
+      if (j === i) ref.current?.play().catch(() => {}); // já é o vídeo carregado: o efeito de [i] não rodaria
+      else setI(j);
+      setPlaying(true); sec.current?.scrollIntoView({ behavior: 'smooth' });
+    }
     ui.set({ video: null });
   }, [want]);
   useEffect(() => {

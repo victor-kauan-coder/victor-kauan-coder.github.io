@@ -149,6 +149,7 @@ const EN = {
   'TermoLOG  no de borda  rev 2': 'TermoLOG  edge node  rev 2',
 
   // ---------- VIA ----------
+  'Música do vídeo do VIA: Sascha Ende (ende.app), CC BY 4.0.': 'Music in the VIA video: Sascha Ende (ende.app), CC BY 4.0.',
   'Balcão': 'Counter',
   'Do primeiro oi até o fechamento.': 'From the first hello to the close.',
   'CRM com atendimento automático para pequenos negócios que vendem pelo WhatsApp. Um processo Node mantém a conexão com o WhatsApp, o Claude Code escreve as respostas a partir dos materiais do negócio e um painel web local reúne conversas, contatos, funil, tarefas, fila de retorno, consumo, materiais, registro e ajustes. Os dados ficam no próprio computador.': 'A CRM with automated replies for small businesses that sell through WhatsApp. A Node process keeps the WhatsApp connection, Claude Code writes the replies from the business’s own materials, and a local web dashboard gathers conversations, contacts, pipeline, tasks, catch-up queue, usage, materials, log and settings. The data stays on the computer.',
